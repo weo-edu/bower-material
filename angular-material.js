@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.0.0-rc5-master-fbb1192
+ * v1.0.0-rc5
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -17360,8 +17360,9 @@ VirtualRepeatDirective.$inject = ["$parse"];
 
 
 /** @ngInject */
-function VirtualRepeatController($scope, $element, $attrs, $browser, $document, $$rAF) {
+function VirtualRepeatController($scope, $element, $attrs, $browser, $document, $$rAF, $rootScope) {
   this.$scope = $scope;
+  this.$rootScope = $rootScope;
   this.$element = $element;
   this.$attrs = $attrs;
   this.$browser = $browser;
@@ -17413,7 +17414,7 @@ function VirtualRepeatController($scope, $element, $attrs, $browser, $document, 
   /** @type {Array<!VirtualRepeatController.Block>} A pool of presently unused blocks. */
   this.pooledBlocks = [];
 }
-VirtualRepeatController.$inject = ["$scope", "$element", "$attrs", "$browser", "$document", "$$rAF"];
+VirtualRepeatController.$inject = ["$scope", "$element", "$attrs", "$browser", "$document", "$$rAF", "$rootScope"];
 
 
 /**
@@ -17457,7 +17458,14 @@ VirtualRepeatController.prototype.readItemSize_ = function() {
 
   this.items = this.repeatListExpression(this.$scope);
   this.parentNode = this.$element[0].parentNode;
+
   var block = this.getBlock_(0);
+
+  // Make sure the block is fully constructed
+  if (!this.$rootScope.$$phase) {
+    this.$rootScope.$apply();
+  }
+
   if (!block.element[0].parentNode) {
     this.parentNode.appendChild(block.element[0]);
   }
@@ -23714,4 +23722,4 @@ angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete.md-TH
 })();
 
 
-})(window, window.angular);;window.ngMaterial={version:{full: "1.0.0-rc5-master-fbb1192"}};
+})(window, window.angular);;window.ngMaterial={version:{full: "1.0.0-rc5"}};
