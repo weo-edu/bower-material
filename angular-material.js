@@ -10,7 +10,7 @@
 (function(){
 "use strict";
 
-angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","material.core.gestures","material.core.layout","material.core.theming.palette","material.core.theming","material.core.animate","material.components.autocomplete","material.components.backdrop","material.components.bottomSheet","material.components.button","material.components.card","material.components.checkbox","material.components.chips","material.components.content","material.components.datepicker","material.components.dialog","material.components.divider","material.components.fabActions","material.components.fabShared","material.components.fabSpeedDial","material.components.fabToolbar","material.components.fabTrigger","material.components.gridList","material.components.icon","material.components.input","material.components.list","material.components.menu","material.components.menuBar","material.components.progressCircular","material.components.progressLinear","material.components.radioButton","material.components.select","material.components.showHide","material.components.sidenav","material.components.slider","material.components.sticky","material.components.subheader","material.components.swipe","material.components.switch","material.components.tabs","material.components.toast","material.components.toolbar","material.components.tooltip","material.components.virtualRepeat","material.components.whiteframe"]);
+angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","material.core.gestures","material.core.theming.palette","material.core.theming","material.core.layout","material.core.animate","material.components.autocomplete","material.components.backdrop","material.components.bottomSheet","material.components.button","material.components.card","material.components.checkbox","material.components.chips","material.components.content","material.components.dialog","material.components.datepicker","material.components.divider","material.components.fabActions","material.components.fabShared","material.components.fabSpeedDial","material.components.fabToolbar","material.components.fabTrigger","material.components.gridList","material.components.icon","material.components.list","material.components.input","material.components.menu","material.components.menuBar","material.components.progressCircular","material.components.progressLinear","material.components.radioButton","material.components.select","material.components.showHide","material.components.sidenav","material.components.slider","material.components.sticky","material.components.subheader","material.components.swipe","material.components.switch","material.components.tabs","material.components.toast","material.components.toolbar","material.components.tooltip","material.components.virtualRepeat","material.components.whiteframe"]);
 })();
 (function(){
 "use strict";
@@ -2993,615 +2993,6 @@ function InterimElementProvider() {
 (function() {
   'use strict';
 
-  var $mdUtil, $interpolate;
-
-  var SUFFIXES = /(-gt)?-(sm|md|lg)/g;
-  var WHITESPACE = /\s+/g;
-
-  var FLEX_OPTIONS = ['grow', 'initial', 'auto', 'none'];
-  var LAYOUT_OPTIONS = ['row', 'column'];
-  var ALIGNMENT_MAIN_AXIS= [ "", "start", "center", "end", "stretch", "space-around", "space-between" ];
-  var ALIGNMENT_CROSS_AXIS= [ "", "start", "center", "end", "stretch" ];
-
-
-  var config = {
-    /**
-     * Enable directive attribute-to-class conversions
-     * Developers can use `<body md-layout-css />` to quickly
-     * disable the Layout directivees and prohibit the injection of Layout classnames
-     */
-    enabled: true,
-
-    /**
-     * List of mediaQuery breakpoints and associated suffixes
-     *
-     *   [
-     *    { suffix: "sm", mediaQuery: "screen and (max-width: 599px)" },
-     *    { suffix: "md", mediaQuery: "screen and (min-width: 600px) and (max-width: 959px)" }
-     *   ]
-     */
-    breakpoints: []
-  };
-
-  /**
-   *   The original ngMaterial Layout solution used attribute selectors and CSS.
-   *
-   *  ```html
-   *  <div layout="column"> My Content </div>
-   *  ```
-   *
-   *  ```css
-   *  [layout] {
-     *    box-sizing: border-box;
-     *    display:flex;
-     *  }
-   *  [layout=column] {
-     *    flex-direction : column
-     *  }
-   *  ```
-   *
-   *  Use of attribute selectors creates significant performance impacts in some
-   *  browsers... mainly IE.
-   *
-   *  This module registers directives that allow the same layout attributes to be
-   *  interpreted and converted to class selectors. The directive will add equivalent classes to each element that
-   *  contains a Layout directive.
-   *
-   * ```html
-   *   <div layout="column" class="layout layout-column"> My Content </div>
-   *```
-   *
-   *  ```css
-   *  .layout {
-     *    box-sizing: border-box;
-     *    display:flex;
-     *  }
-   *  .layout-column {
-     *    flex-direction : column
-     *  }
-   *  ```
-   */
-  angular.module('material.core.layout', ['ng'])
-
-    .directive('mdLayoutCss', disableLayoutDirective )
-
-    .directive('layout', attributeWithObserve('layout'))
-    .directive('layoutSm', attributeWithObserve('layout-sm'))
-    .directive('layoutGtSm', attributeWithObserve('layout-gt-sm'))
-    .directive('layoutMd', attributeWithObserve('layout-md'))
-    .directive('layoutGtMd', attributeWithObserve('layout-gt-md'))
-    .directive('layoutLg', attributeWithObserve('layout-lg'))
-    .directive('layoutGtLg', attributeWithObserve('layout-gt-lg'))
-
-    .directive('flex', attributeWithObserve('flex'))
-    .directive('flexSm', attributeWithObserve('flex-sm'))
-    .directive('flexGtSm', attributeWithObserve('flex-gt-sm'))
-    .directive('flexMd', attributeWithObserve('flex-md'))
-    .directive('flexGtMd', attributeWithObserve('flex-gt-md'))
-    .directive('flexLg', attributeWithObserve('flex-lg'))
-    .directive('flexGtLg', attributeWithObserve('flex-gt-lg'))
-
-    .directive('flexOrder', attributeWithObserve('flex-order'))
-    .directive('flexOrderSm', attributeWithObserve('flex-order-sm'))
-    .directive('flexOrderGtSm', attributeWithObserve('flex-order-gt-sm'))
-    .directive('flexOrderMd', attributeWithObserve('flex-order-md'))
-    .directive('flexOrderGtMd', attributeWithObserve('flex-order-gt-md'))
-    .directive('flexOrderLg', attributeWithObserve('flex-order-lg'))
-    .directive('flexOrderGtLg', attributeWithObserve('flex-order-gt-lg'))
-
-    .directive('flexOffset', attributeWithObserve('flex-offset'))
-    .directive('flexOffsetSm', attributeWithObserve('flex-offset-sm'))
-    .directive('flexOffsetGtSm', attributeWithObserve('flex-offset-gt-sm'))
-    .directive('flexOffsetMd', attributeWithObserve('flex-offset-md'))
-    .directive('flexOffsetGtMd', attributeWithObserve('flex-offset-gt-md'))
-    .directive('flexOffsetLg', attributeWithObserve('flex-offset-lg'))
-    .directive('flexOffsetGtLg', attributeWithObserve('flex-offset-gt-lg'))
-
-    .directive('layoutAlign', attributeWithObserve('layout-align'))
-    .directive('layoutAlignSm', attributeWithObserve('layout-align-sm'))
-    .directive('layoutAlignGtSm', attributeWithObserve('layout-align-gt-sm'))
-    .directive('layoutAlignMd', attributeWithObserve('layout-align-md'))
-    .directive('layoutAlignGtMd', attributeWithObserve('layout-align-gt-md'))
-    .directive('layoutAlignLg', attributeWithObserve('layout-align-lg'))
-    .directive('layoutAlignGtLg', attributeWithObserve('layout-align-gt-lg'))
-
-    // Attribute directives with no value(s)
-
-    .directive('hide', attributeWithoutValue('hide'))
-    .directive('hideSm', attributeWithoutValue('hide-sm'))
-    .directive('hideGtSm', attributeWithoutValue('hide-gt-sm'))
-    .directive('hideMd', attributeWithoutValue('hide-md'))
-    .directive('hideGtMd', attributeWithoutValue('hide-gt-md'))
-    .directive('hideLg', attributeWithoutValue('hide-lg'))
-    .directive('hideGtLg', attributeWithoutValue('hide-gt-lg'))
-    .directive('show', attributeWithoutValue('show'))
-    .directive('showSm', attributeWithoutValue('show-sm'))
-    .directive('showGtSm', attributeWithoutValue('show-gt-sm'))
-    .directive('showMd', attributeWithoutValue('show-md'))
-    .directive('showGtMd', attributeWithoutValue('show-gt-md'))
-    .directive('showLg', attributeWithoutValue('show-lg'))
-    .directive('showGtLg', attributeWithoutValue('show-gt-lg'))
-
-    // Attribute directives with no value(s) and NO breakpoints
-
-    .directive('layoutPadding', attributeWithoutValue('layout-padding'))
-    .directive('layoutPaddingSm', attributeWithoutValue('layout-padding-sm'))
-    .directive('layoutPaddingGtSm', attributeWithoutValue('layout-padding-gt-sm'))
-    .directive('layoutPaddingMd', attributeWithoutValue('layout-padding-md'))
-    .directive('layoutPaddingGtMd', attributeWithoutValue('layout-padding-gt-md'))
-    .directive('layoutPaddingLg', attributeWithoutValue('layout-padding-lg'))
-    .directive('layoutPaddingGtLg', attributeWithoutValue('layout-padding-gt-lg'))
-    
-    .directive('layoutMargin', attributeWithoutValue('layout-margin'))
-    .directive('layoutMarginSm', attributeWithoutValue('layout-margin-sm'))
-    .directive('layoutMarginGtSm', attributeWithoutValue('layout-margin-gt-sm'))
-    .directive('layoutMarginMd', attributeWithoutValue('layout-margin-md'))
-    .directive('layoutMarginGtMd', attributeWithoutValue('layout-margin-gt-md'))
-    .directive('layoutMarginLg', attributeWithoutValue('layout-margin-lg'))
-    .directive('layoutMarginGtLg', attributeWithoutValue('layout-margin-gt-lg'))
-
-    .directive('layoutWrap', attributeWithoutValue('layout-wrap'))
-    .directive('layoutNoWrap', attributeWithoutValue('layout-no-wrap'))
-    .directive('layoutFill', attributeWithoutValue('layout-fill'))
-
-    // !! Deprecated attributes: use the `-lt` (aka less-than) notations
-
-    .directive('layoutLtMd', warnAttrNotSupported('layout-lt-md', true))
-    .directive('layoutLtLg', warnAttrNotSupported('layout-lt-lg', true))
-    .directive('flexLtMd', warnAttrNotSupported('flex-lt-md', true))
-    .directive('flexLtLg', warnAttrNotSupported('flex-lt-lg', true))
-
-    .directive('layoutAlignLtMd', warnAttrNotSupported('layout-align-lt-md'))
-    .directive('layoutAlignLtLg', warnAttrNotSupported('layout-align-lt-lg'))
-    .directive('flexOrderLtMd', warnAttrNotSupported('flex-order-lt-md'))
-    .directive('flexOrderLtLg', warnAttrNotSupported('flex-order-lt-lg'))
-    .directive('offsetLtMd', warnAttrNotSupported('flex-offset-lt-md'))
-    .directive('offsetLtLg', warnAttrNotSupported('flex-offset-lt-lg'))
-
-    .directive('hideLtMd', warnAttrNotSupported('hide-lt-md'))
-    .directive('hideLtLg', warnAttrNotSupported('hide-lt-lg'))
-    .directive('showLtMd', warnAttrNotSupported('show-lt-md'))
-    .directive('showLtLg', warnAttrNotSupported('show-lt-lg'))
-
-    .directive('ngCloak',  buildCloakInterceptor('ng-cloak'));
-
-  /**
-   * Special directive that will disable ALL Layout conversions of layout
-   * attribute(s) to classname(s).
-   *
-   * <link rel="stylesheet" href="angular-material.min.css">
-   * <link rel="stylesheet" href="angular-material.layout.css">
-   *
-   * <body md-layout-css>
-   *  ...
-   * </body>
-   *
-   * Note: Using md-layout-css directive requires the developer to load the Material
-   * Layout Attribute stylesheet (which only uses attribute selectors):
-   *
-   *       `angular-material.layout.css`
-   *
-   * Another option is to use the LayoutProvider to configure and disable the attribute
-   * conversions; this would obviate the use of the `md-layout-css` directive
-   *
-   */
-  function disableLayoutDirective() {
-    return {
-      restrict : 'A',
-      priority : '900',
-      compile  : function(element, attr) {
-        config.enabled = false;
-        return angular.noop;
-      }
-    };
-  }
-
-  // *********************************************************************************
-  //
-  // These functions create registration functions for ngMaterial Layout attribute directives
-  // This provides easy translation to switch ngMaterial attribute selectors to
-  // CLASS selectors and directives; which has huge performance implications
-  // for IE Browsers
-  //
-  // *********************************************************************************
-
-  /**
-   * Tail-hook ngCloak to delay the uncloaking while Layout transformers
-   * finish processing. Eliminates flicker with Material.Layoouts
-   */
-  function buildCloakInterceptor(className) {
-    return [ '$timeout', function($timeout){
-      return {
-        restrict : 'A',
-        priority : -10,   // run after normal ng-cloak
-        compile  : function( element ) {
-          if (!config.enabled) return angular.noop;
-
-          // Re-add the cloak
-          element.addClass(className);
-
-          return function( scope, element ) {
-            // Wait while layout injectors configure, then uncload
-            $timeout( function(){
-              element.removeClass(className);
-            }, 10, false);
-          };
-        }
-      };
-    }];
-  }
-
-  /**
-   * Creates a directive registration function where a possible dynamic attribute
-   * value will be observed/watched.
-   * @param {string} className attribute name; eg `layout-gt-md` with value ="row"
-   */
-  function attributeWithObserve(className) {
-
-    return ['$mdUtil', '$interpolate', function(_$mdUtil_, _$interpolate_) {
-      $mdUtil = _$mdUtil_;
-      $interpolate = _$interpolate_;
-
-      return {
-        restrict: 'A',
-        compile: function(element, attr) {
-          var linkFn;
-          if (config.enabled) {
-            // immediately replace static (non-interpolated) invalid values...
-
-            validateAttributeValue( className,
-              getNormalizedAttrValue(className, attr, ""),
-              buildUpdateFn(element, className, attr)
-            );
-
-            linkFn = translateWithValueToCssClass;
-          }
-
-          // Use for postLink to account for transforms after ng-transclude.
-          return linkFn || angular.noop;
-        }
-      };
-    }];
-
-    /**
-     * Add as transformed class selector(s), then
-     * remove the deprecated attribute selector
-     */
-    function translateWithValueToCssClass(scope, element, attrs) {
-      var updateFn = updateClassWithValue(element, className, attrs);
-      var unwatch = attrs.$observe(attrs.$normalize(className), updateFn);
-
-      updateFn(getNormalizedAttrValue(className, attrs, ""));
-      scope.$on("$destroy", function() { unwatch() });
-    }
-  }
-
-  /**
-   * Creates a registration function for ngMaterial Layout attribute directive.
-   * This is a `simple` transpose of attribute usage to class usage; where we ignore
-   * any attribute value
-   */
-  function attributeWithoutValue(className) {
-    return ['$interpolate', function(_$interpolate_) {
-      $interpolate = _$interpolate_;
-
-      return {
-        restrict: 'A',
-        compile: function(element, attr) {
-          var linkFn;
-          if (config.enabled) {
-            // immediately replace static (non-interpolated) invalid values...
-
-            validateAttributeValue( className,
-              getNormalizedAttrValue(className, attr, ""),
-              buildUpdateFn(element, className, attr)
-            );
-
-            translateToCssClass(null, element);
-
-            // Use for postLink to account for transforms after ng-transclude.
-            linkFn = translateToCssClass;
-          }
-
-          return linkFn || angular.noop;
-        }
-      };
-    }];
-
-    /**
-     * Add as transformed class selector, then
-     * remove the deprecated attribute selector
-     */
-    function translateToCssClass(scope, element) {
-      element.addClass(className);
-    }
-  }
-
-
-
-  /**
-   * After link-phase, do NOT remove deprecated layout attribute selector.
-   * Instead watch the attribute so interpolated data-bindings to layout
-   * selectors will continue to be supported.
-   *
-   * $observe() the className and update with new class (after removing the last one)
-   *
-   * e.g. `layout="{{layoutDemo.direction}}"` will update...
-   *
-   * NOTE: The value must match one of the specified styles in the CSS.
-   * For example `flex-gt-md="{{size}}`  where `scope.size == 47` will NOT work since
-   * only breakpoints for 0, 5, 10, 15... 100, 33, 34, 66, 67 are defined.
-   *
-   */
-  function updateClassWithValue(element, className) {
-    var lastClass;
-
-    return function updateClassFn(newValue) {
-      var value = validateAttributeValue(className, newValue || "");
-      if ( angular.isDefined(value) ) {
-        if (lastClass) element.removeClass(lastClass);
-        lastClass = !value ? className : className + "-" + value.replace(WHITESPACE, "-");
-        element.addClass(lastClass);
-      }
-    };
-  }
-
-  /**
-   * Provide console warning that this layout attribute has been deprecated
-   *
-   */
-  function warnAttrNotSupported(className) {
-    var parts = className.split("-");
-    return ["$log", function($log) {
-      $log.warn(className + "has been deprecated. Please use a `" + parts[0] + "-gt-<xxx>` variant.");
-      return angular.noop;
-    }];
-  }
-
-  /**
-   * For the Layout attribute value, validate or replace with default
-   * fallback value
-   */
-  function validateAttributeValue(className, value, updateFn) {
-    var origValue = value;
-
-    if (!needsInterpolation(value)) {
-      switch (className.replace(SUFFIXES,"")) {
-        case 'layout'        :
-          if ( !findIn(value, LAYOUT_OPTIONS) ) {
-            value = LAYOUT_OPTIONS[0];    // 'row';
-          }
-          break;
-
-        case 'flex'          :
-          if (!findIn(value, FLEX_OPTIONS)) {
-            if (isNaN(value)) {
-              value = '';
-            }
-          }
-          break;
-
-        case 'flex-offset' :
-        case 'flex-order'    :
-          if (!value || isNaN(+value)) {
-            value = '0';
-          }
-          break;
-
-        case 'layout-align'  :
-          var axis = extractAlignAxis(value);
-          value = $mdUtil.supplant("{main}-{cross}",axis);
-          break;
-
-        case 'layout-padding' :
-        case 'layout-margin'  :
-        case 'layout-fill'    :
-        case 'layout-wrap'    :
-        case 'layout-no-wrap' :
-          value = '';
-          break;
-      }
-
-      if (value != origValue) {
-        (updateFn || angular.noop)(value);
-      }
-    }
-
-    return value;
-  }
-
-  /**
-   * Replace current attribute value with fallback value
-   */
-  function buildUpdateFn(element, className, attrs) {
-    return function updateAttrValue(fallback) {
-      if (!needsInterpolation(fallback)) {
-        element.attr(className, fallback);
-        attrs[attrs.$normalize(className)] = fallback;
-      }
-    };
-  }
-
-  /**
-   * See if the original value has interpolation symbols:
-   * e.g.  flex-gt-md="{{triggerPoint}}"
-   */
-  function needsInterpolation(value) {
-    return (value || "").indexOf($interpolate.startSymbol()) > -1;
-  }
-
-  function getNormalizedAttrValue(className, attrs, defaultVal) {
-    var normalizedAttr = attrs.$normalize(className);
-    return attrs[normalizedAttr] ? attrs[normalizedAttr].replace(WHITESPACE, "-") : defaultVal || null;
-  }
-
-  function findIn(item, list, replaceWith) {
-    item = replaceWith && item ? item.replace(WHITESPACE, replaceWith) : item;
-
-    var found = false;
-    if (item) {
-      list.forEach(function(it) {
-        it = replaceWith ? it.replace(WHITESPACE, replaceWith) : it;
-        found = found || (it === item);
-      });
-    }
-    return found;
-  }
-
-  function extractAlignAxis(value) {
-    var axis = {
-      main : "start",
-      cross: "stretch"
-    };
-
-    var values = (value || "").replace(WHITESPACE, "-").split("-");
-    if ( values.length == 3 ) {
-      values = [ values[0]+"-"+values[1],values[2] ];
-    }
-
-    if ( values.length > 0 ) axis.main  = values[0] || axis.main;
-    if ( values.length > 1 ) axis.cross = values[1] || axis.cross;
-
-    if ( ALIGNMENT_MAIN_AXIS.indexOf(axis.main) < 0 )   axis.main = "start";
-    if ( ALIGNMENT_CROSS_AXIS.indexOf(axis.cross) < 0 ) axis.cross = "stretch";
-
-    return axis;
-  }
-
-})();
-
-})();
-(function(){
-"use strict";
-
-  /**
-   * @ngdoc module
-   * @name material.core.componentRegistry
-   *
-   * @description
-   * A component instance registration service.
-   * Note: currently this as a private service in the SideNav component.
-   */
-  angular.module('material.core')
-    .factory('$mdComponentRegistry', ComponentRegistry);
-
-  /*
-   * @private
-   * @ngdoc factory
-   * @name ComponentRegistry
-   * @module material.core.componentRegistry
-   *
-   */
-  function ComponentRegistry($log, $q) {
-
-    var self;
-    var instances = [ ];
-    var pendings = { };
-
-    return self = {
-      /**
-       * Used to print an error when an instance for a handle isn't found.
-       */
-      notFoundError: function(handle) {
-        $log.error('No instance found for handle', handle);
-      },
-      /**
-       * Return all registered instances as an array.
-       */
-      getInstances: function() {
-        return instances;
-      },
-
-      /**
-       * Get a registered instance.
-       * @param handle the String handle to look up for a registered instance.
-       */
-      get: function(handle) {
-        if ( !isValidID(handle) ) return null;
-
-        var i, j, instance;
-        for(i = 0, j = instances.length; i < j; i++) {
-          instance = instances[i];
-          if(instance.$$mdHandle === handle) {
-            return instance;
-          }
-        }
-        return null;
-      },
-
-      /**
-       * Register an instance.
-       * @param instance the instance to register
-       * @param handle the handle to identify the instance under.
-       */
-      register: function(instance, handle) {
-        if ( !handle ) return angular.noop;
-
-        instance.$$mdHandle = handle;
-        instances.push(instance);
-        resolveWhen();
-
-        return deregister;
-
-        /**
-         * Remove registration for an instance
-         */
-        function deregister() {
-          var index = instances.indexOf(instance);
-          if (index !== -1) {
-            instances.splice(index, 1);
-          }
-        }
-
-        /**
-         * Resolve any pending promises for this instance
-         */
-        function resolveWhen() {
-          var dfd = pendings[handle];
-          if ( dfd ) {
-            dfd.resolve( instance );
-            delete pendings[handle];
-          }
-        }
-      },
-
-      /**
-       * Async accessor to registered component instance
-       * If not available then a promise is created to notify
-       * all listeners when the instance is registered.
-       */
-      when : function(handle) {
-        if ( isValidID(handle) ) {
-          var deferred = $q.defer();
-          var instance = self.get(handle);
-
-          if ( instance )  {
-            deferred.resolve( instance );
-          } else {
-            pendings[handle] = deferred;
-          }
-
-          return deferred.promise;
-        }
-        return $q.reject("Invalid `md-component-id` value.");
-      }
-
-    };
-
-    function isValidID(handle){
-      return handle && (handle !== "");
-    }
-
-  }
-  ComponentRegistry.$inject = ["$log", "$q"];
-
-})();
-(function(){
-"use strict";
-
-(function() {
-  'use strict';
-
   /**
    * @ngdoc service
    * @name $mdButtonInkRipple
@@ -4224,6 +3615,131 @@ function attrNoDirective () {
   }
   MdTabInkRipple.$inject = ["$mdInkRipple"];;
 })();
+
+})();
+(function(){
+"use strict";
+
+  /**
+   * @ngdoc module
+   * @name material.core.componentRegistry
+   *
+   * @description
+   * A component instance registration service.
+   * Note: currently this as a private service in the SideNav component.
+   */
+  angular.module('material.core')
+    .factory('$mdComponentRegistry', ComponentRegistry);
+
+  /*
+   * @private
+   * @ngdoc factory
+   * @name ComponentRegistry
+   * @module material.core.componentRegistry
+   *
+   */
+  function ComponentRegistry($log, $q) {
+
+    var self;
+    var instances = [ ];
+    var pendings = { };
+
+    return self = {
+      /**
+       * Used to print an error when an instance for a handle isn't found.
+       */
+      notFoundError: function(handle) {
+        $log.error('No instance found for handle', handle);
+      },
+      /**
+       * Return all registered instances as an array.
+       */
+      getInstances: function() {
+        return instances;
+      },
+
+      /**
+       * Get a registered instance.
+       * @param handle the String handle to look up for a registered instance.
+       */
+      get: function(handle) {
+        if ( !isValidID(handle) ) return null;
+
+        var i, j, instance;
+        for(i = 0, j = instances.length; i < j; i++) {
+          instance = instances[i];
+          if(instance.$$mdHandle === handle) {
+            return instance;
+          }
+        }
+        return null;
+      },
+
+      /**
+       * Register an instance.
+       * @param instance the instance to register
+       * @param handle the handle to identify the instance under.
+       */
+      register: function(instance, handle) {
+        if ( !handle ) return angular.noop;
+
+        instance.$$mdHandle = handle;
+        instances.push(instance);
+        resolveWhen();
+
+        return deregister;
+
+        /**
+         * Remove registration for an instance
+         */
+        function deregister() {
+          var index = instances.indexOf(instance);
+          if (index !== -1) {
+            instances.splice(index, 1);
+          }
+        }
+
+        /**
+         * Resolve any pending promises for this instance
+         */
+        function resolveWhen() {
+          var dfd = pendings[handle];
+          if ( dfd ) {
+            dfd.resolve( instance );
+            delete pendings[handle];
+          }
+        }
+      },
+
+      /**
+       * Async accessor to registered component instance
+       * If not available then a promise is created to notify
+       * all listeners when the instance is registered.
+       */
+      when : function(handle) {
+        if ( isValidID(handle) ) {
+          var deferred = $q.defer();
+          var instance = self.get(handle);
+
+          if ( instance )  {
+            deferred.resolve( instance );
+          } else {
+            pendings[handle] = deferred;
+          }
+
+          return deferred.promise;
+        }
+        return $q.reject("Invalid `md-component-id` value.");
+      }
+
+    };
+
+    function isValidID(handle){
+      return handle && (handle !== "");
+    }
+
+  }
+  ComponentRegistry.$inject = ["$log", "$q"];
 
 })();
 (function(){
@@ -5266,23 +4782,507 @@ function rgba(rgbArray, opacity) {
 (function(){
 "use strict";
 
+(function() {
+  'use strict';
+
+  var $mdUtil, $interpolate;
+
+  var SUFFIXES = /(-gt)?-(sm|md|lg)/g;
+  var WHITESPACE = /\s+/g;
+
+  var FLEX_OPTIONS = ['grow', 'initial', 'auto', 'none'];
+  var LAYOUT_OPTIONS = ['row', 'column'];
+  var ALIGNMENT_MAIN_AXIS= [ "", "start", "center", "end", "stretch", "space-around", "space-between" ];
+  var ALIGNMENT_CROSS_AXIS= [ "", "start", "center", "end", "stretch" ];
+
+
+  var config = {
+    /**
+     * Enable directive attribute-to-class conversions
+     * Developers can use `<body md-layout-css />` to quickly
+     * disable the Layout directivees and prohibit the injection of Layout classnames
+     */
+    enabled: true,
+
+    /**
+     * List of mediaQuery breakpoints and associated suffixes
+     *
+     *   [
+     *    { suffix: "sm", mediaQuery: "screen and (max-width: 599px)" },
+     *    { suffix: "md", mediaQuery: "screen and (min-width: 600px) and (max-width: 959px)" }
+     *   ]
+     */
+    breakpoints: []
+  };
+
+  /**
+   *   The original ngMaterial Layout solution used attribute selectors and CSS.
+   *
+   *  ```html
+   *  <div layout="column"> My Content </div>
+   *  ```
+   *
+   *  ```css
+   *  [layout] {
+     *    box-sizing: border-box;
+     *    display:flex;
+     *  }
+   *  [layout=column] {
+     *    flex-direction : column
+     *  }
+   *  ```
+   *
+   *  Use of attribute selectors creates significant performance impacts in some
+   *  browsers... mainly IE.
+   *
+   *  This module registers directives that allow the same layout attributes to be
+   *  interpreted and converted to class selectors. The directive will add equivalent classes to each element that
+   *  contains a Layout directive.
+   *
+   * ```html
+   *   <div layout="column" class="layout layout-column"> My Content </div>
+   *```
+   *
+   *  ```css
+   *  .layout {
+     *    box-sizing: border-box;
+     *    display:flex;
+     *  }
+   *  .layout-column {
+     *    flex-direction : column
+     *  }
+   *  ```
+   */
+  angular.module('material.core.layout', ['ng'])
+
+    .directive('mdLayoutCss', disableLayoutDirective )
+
+    .directive('layout', attributeWithObserve('layout'))
+    .directive('layoutSm', attributeWithObserve('layout-sm'))
+    .directive('layoutGtSm', attributeWithObserve('layout-gt-sm'))
+    .directive('layoutMd', attributeWithObserve('layout-md'))
+    .directive('layoutGtMd', attributeWithObserve('layout-gt-md'))
+    .directive('layoutLg', attributeWithObserve('layout-lg'))
+    .directive('layoutGtLg', attributeWithObserve('layout-gt-lg'))
+
+    .directive('flex', attributeWithObserve('flex'))
+    .directive('flexSm', attributeWithObserve('flex-sm'))
+    .directive('flexGtSm', attributeWithObserve('flex-gt-sm'))
+    .directive('flexMd', attributeWithObserve('flex-md'))
+    .directive('flexGtMd', attributeWithObserve('flex-gt-md'))
+    .directive('flexLg', attributeWithObserve('flex-lg'))
+    .directive('flexGtLg', attributeWithObserve('flex-gt-lg'))
+
+    .directive('flexOrder', attributeWithObserve('flex-order'))
+    .directive('flexOrderSm', attributeWithObserve('flex-order-sm'))
+    .directive('flexOrderGtSm', attributeWithObserve('flex-order-gt-sm'))
+    .directive('flexOrderMd', attributeWithObserve('flex-order-md'))
+    .directive('flexOrderGtMd', attributeWithObserve('flex-order-gt-md'))
+    .directive('flexOrderLg', attributeWithObserve('flex-order-lg'))
+    .directive('flexOrderGtLg', attributeWithObserve('flex-order-gt-lg'))
+
+    .directive('flexOffset', attributeWithObserve('flex-offset'))
+    .directive('flexOffsetSm', attributeWithObserve('flex-offset-sm'))
+    .directive('flexOffsetGtSm', attributeWithObserve('flex-offset-gt-sm'))
+    .directive('flexOffsetMd', attributeWithObserve('flex-offset-md'))
+    .directive('flexOffsetGtMd', attributeWithObserve('flex-offset-gt-md'))
+    .directive('flexOffsetLg', attributeWithObserve('flex-offset-lg'))
+    .directive('flexOffsetGtLg', attributeWithObserve('flex-offset-gt-lg'))
+
+    .directive('layoutAlign', attributeWithObserve('layout-align'))
+    .directive('layoutAlignSm', attributeWithObserve('layout-align-sm'))
+    .directive('layoutAlignGtSm', attributeWithObserve('layout-align-gt-sm'))
+    .directive('layoutAlignMd', attributeWithObserve('layout-align-md'))
+    .directive('layoutAlignGtMd', attributeWithObserve('layout-align-gt-md'))
+    .directive('layoutAlignLg', attributeWithObserve('layout-align-lg'))
+    .directive('layoutAlignGtLg', attributeWithObserve('layout-align-gt-lg'))
+
+    // Attribute directives with no value(s)
+
+    .directive('hide', attributeWithoutValue('hide'))
+    .directive('hideSm', attributeWithoutValue('hide-sm'))
+    .directive('hideGtSm', attributeWithoutValue('hide-gt-sm'))
+    .directive('hideMd', attributeWithoutValue('hide-md'))
+    .directive('hideGtMd', attributeWithoutValue('hide-gt-md'))
+    .directive('hideLg', attributeWithoutValue('hide-lg'))
+    .directive('hideGtLg', attributeWithoutValue('hide-gt-lg'))
+    .directive('show', attributeWithoutValue('show'))
+    .directive('showSm', attributeWithoutValue('show-sm'))
+    .directive('showGtSm', attributeWithoutValue('show-gt-sm'))
+    .directive('showMd', attributeWithoutValue('show-md'))
+    .directive('showGtMd', attributeWithoutValue('show-gt-md'))
+    .directive('showLg', attributeWithoutValue('show-lg'))
+    .directive('showGtLg', attributeWithoutValue('show-gt-lg'))
+
+    // Attribute directives with no value(s) and NO breakpoints
+
+    .directive('layoutPadding', attributeWithoutValue('layout-padding'))
+    .directive('layoutPaddingSm', attributeWithoutValue('layout-padding-sm'))
+    .directive('layoutPaddingGtSm', attributeWithoutValue('layout-padding-gt-sm'))
+    .directive('layoutPaddingMd', attributeWithoutValue('layout-padding-md'))
+    .directive('layoutPaddingGtMd', attributeWithoutValue('layout-padding-gt-md'))
+    .directive('layoutPaddingLg', attributeWithoutValue('layout-padding-lg'))
+    .directive('layoutPaddingGtLg', attributeWithoutValue('layout-padding-gt-lg'))
+    
+    .directive('layoutMargin', attributeWithoutValue('layout-margin'))
+    .directive('layoutMarginSm', attributeWithoutValue('layout-margin-sm'))
+    .directive('layoutMarginGtSm', attributeWithoutValue('layout-margin-gt-sm'))
+    .directive('layoutMarginMd', attributeWithoutValue('layout-margin-md'))
+    .directive('layoutMarginGtMd', attributeWithoutValue('layout-margin-gt-md'))
+    .directive('layoutMarginLg', attributeWithoutValue('layout-margin-lg'))
+    .directive('layoutMarginGtLg', attributeWithoutValue('layout-margin-gt-lg'))
+
+    .directive('layoutWrap', attributeWithoutValue('layout-wrap'))
+    .directive('layoutNoWrap', attributeWithoutValue('layout-no-wrap'))
+    .directive('layoutFill', attributeWithoutValue('layout-fill'))
+
+    // !! Deprecated attributes: use the `-lt` (aka less-than) notations
+
+    .directive('layoutLtMd', warnAttrNotSupported('layout-lt-md', true))
+    .directive('layoutLtLg', warnAttrNotSupported('layout-lt-lg', true))
+    .directive('flexLtMd', warnAttrNotSupported('flex-lt-md', true))
+    .directive('flexLtLg', warnAttrNotSupported('flex-lt-lg', true))
+
+    .directive('layoutAlignLtMd', warnAttrNotSupported('layout-align-lt-md'))
+    .directive('layoutAlignLtLg', warnAttrNotSupported('layout-align-lt-lg'))
+    .directive('flexOrderLtMd', warnAttrNotSupported('flex-order-lt-md'))
+    .directive('flexOrderLtLg', warnAttrNotSupported('flex-order-lt-lg'))
+    .directive('offsetLtMd', warnAttrNotSupported('flex-offset-lt-md'))
+    .directive('offsetLtLg', warnAttrNotSupported('flex-offset-lt-lg'))
+
+    .directive('hideLtMd', warnAttrNotSupported('hide-lt-md'))
+    .directive('hideLtLg', warnAttrNotSupported('hide-lt-lg'))
+    .directive('showLtMd', warnAttrNotSupported('show-lt-md'))
+    .directive('showLtLg', warnAttrNotSupported('show-lt-lg'))
+
+    .directive('ngCloak',  buildCloakInterceptor('ng-cloak'));
+
+  /**
+   * Special directive that will disable ALL Layout conversions of layout
+   * attribute(s) to classname(s).
+   *
+   * <link rel="stylesheet" href="angular-material.min.css">
+   * <link rel="stylesheet" href="angular-material.layout.css">
+   *
+   * <body md-layout-css>
+   *  ...
+   * </body>
+   *
+   * Note: Using md-layout-css directive requires the developer to load the Material
+   * Layout Attribute stylesheet (which only uses attribute selectors):
+   *
+   *       `angular-material.layout.css`
+   *
+   * Another option is to use the LayoutProvider to configure and disable the attribute
+   * conversions; this would obviate the use of the `md-layout-css` directive
+   *
+   */
+  function disableLayoutDirective() {
+    return {
+      restrict : 'A',
+      priority : '900',
+      compile  : function(element, attr) {
+        config.enabled = false;
+        return angular.noop;
+      }
+    };
+  }
+
+  // *********************************************************************************
+  //
+  // These functions create registration functions for ngMaterial Layout attribute directives
+  // This provides easy translation to switch ngMaterial attribute selectors to
+  // CLASS selectors and directives; which has huge performance implications
+  // for IE Browsers
+  //
+  // *********************************************************************************
+
+  /**
+   * Tail-hook ngCloak to delay the uncloaking while Layout transformers
+   * finish processing. Eliminates flicker with Material.Layoouts
+   */
+  function buildCloakInterceptor(className) {
+    return [ '$timeout', function($timeout){
+      return {
+        restrict : 'A',
+        priority : -10,   // run after normal ng-cloak
+        compile  : function( element ) {
+          if (!config.enabled) return angular.noop;
+
+          // Re-add the cloak
+          element.addClass(className);
+
+          return function( scope, element ) {
+            // Wait while layout injectors configure, then uncload
+            $timeout( function(){
+              element.removeClass(className);
+            }, 10, false);
+          };
+        }
+      };
+    }];
+  }
+
+  /**
+   * Creates a directive registration function where a possible dynamic attribute
+   * value will be observed/watched.
+   * @param {string} className attribute name; eg `layout-gt-md` with value ="row"
+   */
+  function attributeWithObserve(className) {
+
+    return ['$mdUtil', '$interpolate', function(_$mdUtil_, _$interpolate_) {
+      $mdUtil = _$mdUtil_;
+      $interpolate = _$interpolate_;
+
+      return {
+        restrict: 'A',
+        compile: function(element, attr) {
+          var linkFn;
+          if (config.enabled) {
+            // immediately replace static (non-interpolated) invalid values...
+
+            validateAttributeValue( className,
+              getNormalizedAttrValue(className, attr, ""),
+              buildUpdateFn(element, className, attr)
+            );
+
+            linkFn = translateWithValueToCssClass;
+          }
+
+          // Use for postLink to account for transforms after ng-transclude.
+          return linkFn || angular.noop;
+        }
+      };
+    }];
+
+    /**
+     * Add as transformed class selector(s), then
+     * remove the deprecated attribute selector
+     */
+    function translateWithValueToCssClass(scope, element, attrs) {
+      var updateFn = updateClassWithValue(element, className, attrs);
+      var unwatch = attrs.$observe(attrs.$normalize(className), updateFn);
+
+      updateFn(getNormalizedAttrValue(className, attrs, ""));
+      scope.$on("$destroy", function() { unwatch() });
+    }
+  }
+
+  /**
+   * Creates a registration function for ngMaterial Layout attribute directive.
+   * This is a `simple` transpose of attribute usage to class usage; where we ignore
+   * any attribute value
+   */
+  function attributeWithoutValue(className) {
+    return ['$interpolate', function(_$interpolate_) {
+      $interpolate = _$interpolate_;
+
+      return {
+        restrict: 'A',
+        compile: function(element, attr) {
+          var linkFn;
+          if (config.enabled) {
+            // immediately replace static (non-interpolated) invalid values...
+
+            validateAttributeValue( className,
+              getNormalizedAttrValue(className, attr, ""),
+              buildUpdateFn(element, className, attr)
+            );
+
+            translateToCssClass(null, element);
+
+            // Use for postLink to account for transforms after ng-transclude.
+            linkFn = translateToCssClass;
+          }
+
+          return linkFn || angular.noop;
+        }
+      };
+    }];
+
+    /**
+     * Add as transformed class selector, then
+     * remove the deprecated attribute selector
+     */
+    function translateToCssClass(scope, element) {
+      element.addClass(className);
+    }
+  }
+
+
+
+  /**
+   * After link-phase, do NOT remove deprecated layout attribute selector.
+   * Instead watch the attribute so interpolated data-bindings to layout
+   * selectors will continue to be supported.
+   *
+   * $observe() the className and update with new class (after removing the last one)
+   *
+   * e.g. `layout="{{layoutDemo.direction}}"` will update...
+   *
+   * NOTE: The value must match one of the specified styles in the CSS.
+   * For example `flex-gt-md="{{size}}`  where `scope.size == 47` will NOT work since
+   * only breakpoints for 0, 5, 10, 15... 100, 33, 34, 66, 67 are defined.
+   *
+   */
+  function updateClassWithValue(element, className) {
+    var lastClass;
+
+    return function updateClassFn(newValue) {
+      var value = validateAttributeValue(className, newValue || "");
+      if ( angular.isDefined(value) ) {
+        if (lastClass) element.removeClass(lastClass);
+        lastClass = !value ? className : className + "-" + value.replace(WHITESPACE, "-");
+        element.addClass(lastClass);
+      }
+    };
+  }
+
+  /**
+   * Provide console warning that this layout attribute has been deprecated
+   *
+   */
+  function warnAttrNotSupported(className) {
+    var parts = className.split("-");
+    return ["$log", function($log) {
+      $log.warn(className + "has been deprecated. Please use a `" + parts[0] + "-gt-<xxx>` variant.");
+      return angular.noop;
+    }];
+  }
+
+  /**
+   * For the Layout attribute value, validate or replace with default
+   * fallback value
+   */
+  function validateAttributeValue(className, value, updateFn) {
+    var origValue = value;
+
+    if (!needsInterpolation(value)) {
+      switch (className.replace(SUFFIXES,"")) {
+        case 'layout'        :
+          if ( !findIn(value, LAYOUT_OPTIONS) ) {
+            value = LAYOUT_OPTIONS[0];    // 'row';
+          }
+          break;
+
+        case 'flex'          :
+          if (!findIn(value, FLEX_OPTIONS)) {
+            if (isNaN(value)) {
+              value = '';
+            }
+          }
+          break;
+
+        case 'flex-offset' :
+        case 'flex-order'    :
+          if (!value || isNaN(+value)) {
+            value = '0';
+          }
+          break;
+
+        case 'layout-align'  :
+          var axis = extractAlignAxis(value);
+          value = $mdUtil.supplant("{main}-{cross}",axis);
+          break;
+
+        case 'layout-padding' :
+        case 'layout-margin'  :
+        case 'layout-fill'    :
+        case 'layout-wrap'    :
+        case 'layout-no-wrap' :
+          value = '';
+          break;
+      }
+
+      if (value != origValue) {
+        (updateFn || angular.noop)(value);
+      }
+    }
+
+    return value;
+  }
+
+  /**
+   * Replace current attribute value with fallback value
+   */
+  function buildUpdateFn(element, className, attrs) {
+    return function updateAttrValue(fallback) {
+      if (!needsInterpolation(fallback)) {
+        element.attr(className, fallback);
+        attrs[attrs.$normalize(className)] = fallback;
+      }
+    };
+  }
+
+  /**
+   * See if the original value has interpolation symbols:
+   * e.g.  flex-gt-md="{{triggerPoint}}"
+   */
+  function needsInterpolation(value) {
+    return (value || "").indexOf($interpolate.startSymbol()) > -1;
+  }
+
+  function getNormalizedAttrValue(className, attrs, defaultVal) {
+    var normalizedAttr = attrs.$normalize(className);
+    return attrs[normalizedAttr] ? attrs[normalizedAttr].replace(WHITESPACE, "-") : defaultVal || null;
+  }
+
+  function findIn(item, list, replaceWith) {
+    item = replaceWith && item ? item.replace(WHITESPACE, replaceWith) : item;
+
+    var found = false;
+    if (item) {
+      list.forEach(function(it) {
+        it = replaceWith ? it.replace(WHITESPACE, replaceWith) : it;
+        found = found || (it === item);
+      });
+    }
+    return found;
+  }
+
+  function extractAlignAxis(value) {
+    var axis = {
+      main : "start",
+      cross: "stretch"
+    };
+
+    var values = (value || "").replace(WHITESPACE, "-").split("-");
+    if ( values.length == 3 ) {
+      values = [ values[0]+"-"+values[1],values[2] ];
+    }
+
+    if ( values.length > 0 ) axis.main  = values[0] || axis.main;
+    if ( values.length > 1 ) axis.cross = values[1] || axis.cross;
+
+    if ( ALIGNMENT_MAIN_AXIS.indexOf(axis.main) < 0 )   axis.main = "start";
+    if ( ALIGNMENT_CROSS_AXIS.indexOf(axis.cross) < 0 ) axis.cross = "stretch";
+
+    return axis;
+  }
+
+})();
+
+})();
+(function(){
+"use strict";
+
 // Polyfill angular < 1.4 (provide $animateCss)
 angular
   .module('material.core')
-  .factory('$$mdAnimate', ["$q", "$timeout", "$mdConstant", "$animateCss", function($q, $timeout, $mdConstant, $animateCss){
+  .factory('$$mdAnimate', ["$q", "$timeout", "$mdConstant", "$animateCss", "$rootScope", function($q, $timeout, $mdConstant, $animateCss, $rootScope){
 
      // Since $$mdAnimate is injected into $mdUtil... use a wrapper function
      // to subsequently inject $mdUtil as an argument to the AnimateDomUtils
 
      return function($mdUtil) {
-       return AnimateDomUtils( $mdUtil, $q, $timeout, $mdConstant, $animateCss);
+       return AnimateDomUtils( $mdUtil, $q, $timeout, $mdConstant, $animateCss, $rootScope);
      };
    }]);
 
 /**
  * Factory function that requires special injections
  */
-function AnimateDomUtils($mdUtil, $q, $timeout, $mdConstant, $animateCss) {
+function AnimateDomUtils($mdUtil, $q, $timeout, $mdConstant, $animateCss, $rootScope) {
   var self;
   return self = {
     /**
@@ -5323,7 +5323,7 @@ function AnimateDomUtils($mdUtil, $q, $timeout, $mdConstant, $animateCss) {
         return $q(function(resolve, reject){
           opts = opts || { };
 
-          var timer = $timeout(finished, opts.timeout || TIMEOUT);
+          var timer = $timeout(finished, opts.timeout || TIMEOUT, false);
           element.on($mdConstant.CSS.TRANSITIONEND, finished);
 
           /**
@@ -5338,7 +5338,7 @@ function AnimateDomUtils($mdUtil, $q, $timeout, $mdConstant, $animateCss) {
 
             // Never reject since ngAnimate may cause timeouts due missed transitionEnd events
             resolve();
-
+            $rootScope.$applyAsync();
           }
 
         });
@@ -6805,6 +6805,990 @@ function iosScrollFix(node) {
     }
   });
 }
+
+})();
+(function(){
+"use strict";
+
+/**
+ * @ngdoc module
+ * @name material.components.dialog
+ */
+angular
+  .module('material.components.dialog', [
+    'material.core',
+    'material.components.backdrop'
+  ])
+  .directive('mdDialog', MdDialogDirective)
+  .provider('$mdDialog', MdDialogProvider);
+
+function MdDialogDirective($$rAF, $mdTheming, $mdDialog) {
+  return {
+    restrict: 'E',
+    link: function(scope, element, attr) {
+      $mdTheming(element);
+      $$rAF(function() {
+        var images;
+        var content = element[0].querySelector('md-dialog-content');
+
+        if (content) {
+          images = content.getElementsByTagName('img');
+          addOverflowClass();
+          //-- delayed image loading may impact scroll height, check after images are loaded
+          angular.element(images).on('load', addOverflowClass);
+        }
+
+        scope.$on('$destroy', function() {
+          $mdDialog.destroy(element);
+        });
+
+        /**
+         *
+         */
+        function addOverflowClass() {
+          element.toggleClass('md-content-overflow', content.scrollHeight > content.clientHeight);
+        }
+
+
+      });
+    }
+  };
+}
+MdDialogDirective.$inject = ["$$rAF", "$mdTheming", "$mdDialog"];
+
+/**
+ * @ngdoc service
+ * @name $mdDialog
+ * @module material.components.dialog
+ *
+ * @description
+ * `$mdDialog` opens a dialog over the app to inform users about critical information or require
+ *  them to make decisions. There are two approaches for setup: a simple promise API
+ *  and regular object syntax.
+ *
+ * ## Restrictions
+ *
+ * - The dialog is always given an isolate scope.
+ * - The dialog's template must have an outer `<md-dialog>` element.
+ *   Inside, use an `<md-dialog-content>` element for the dialog's content, and use
+ *   an `<md-dialog-actions>` element for the dialog's actions.
+ * - Dialogs must cover the entire application to keep interactions inside of them.
+ * Use the `parent` option to change where dialogs are appended.
+ *
+ * ## Sizing
+ * - Complex dialogs can be sized with `flex="percentage"`, i.e. `flex="66"`.
+ * - Default max-width is 80% of the `rootElement` or `parent`.
+ *
+ * ## Css
+ * - `.md-dialog-content` - class that sets the padding on the content as the spec file
+ *
+ * @usage
+ * <hljs lang="html">
+ * <div  ng-app="demoApp" ng-controller="EmployeeController">
+ *   <div>
+ *     <md-button ng-click="showAlert()" class="md-raised md-warn">
+ *       Employee Alert!
+ *       </md-button>
+ *   </div>
+ *   <div>
+ *     <md-button ng-click="showDialog($event)" class="md-raised">
+ *       Custom Dialog
+ *       </md-button>
+ *   </div>
+ *   <div>
+ *     <md-button ng-click="closeAlert()" ng-disabled="!hasAlert()" class="md-raised">
+ *       Close Alert
+ *     </md-button>
+ *   </div>
+ *   <div>
+ *     <md-button ng-click="showGreeting($event)" class="md-raised md-primary" >
+ *       Greet Employee
+ *       </md-button>
+ *   </div>
+ * </div>
+ * </hljs>
+ *
+ * ### JavaScript: object syntax
+ * <hljs lang="js">
+ * (function(angular, undefined){
+ *   "use strict";
+ *
+ *   angular
+ *    .module('demoApp', ['ngMaterial'])
+ *    .controller('AppCtrl', AppController);
+ *
+ *   function AppController($scope, $mdDialog) {
+ *     var alert;
+ *     $scope.showAlert = showAlert;
+ *     $scope.showDialog = showDialog;
+ *     $scope.items = [1, 2, 3];
+ *
+ *     // Internal method
+ *     function showAlert() {
+ *       alert = $mdDialog.alert({
+ *         title: 'Attention',
+ *         content: 'This is an example of how easy dialogs can be!',
+ *         ok: 'Close'
+ *       });
+ *
+ *       $mdDialog
+ *         .show( alert )
+ *         .finally(function() {
+ *           alert = undefined;
+ *         });
+ *     }
+ *
+ *     function showDialog($event) {
+ *        var parentEl = angular.element(document.body);
+ *        $mdDialog.show({
+ *          parent: parentEl,
+ *          targetEvent: $event,
+ *          template:
+ *            '<md-dialog aria-label="List dialog">' +
+ *            '  <md-dialog-content>'+
+ *            '    <md-list>'+
+ *            '      <md-list-item ng-repeat="item in items">'+
+ *            '       <p>Number {{item}}</p>' +
+ *            '      </md-item>'+
+ *            '    </md-list>'+
+ *            '  </md-dialog-content>' +
+ *            '  <md-dialog-actions>' +
+ *            '    <md-button ng-click="closeDialog()" class="md-primary">' +
+ *            '      Close Dialog' +
+ *            '    </md-button>' +
+ *            '  </md-dialog-actions>' +
+ *            '</md-dialog>',
+ *          locals: {
+ *            items: $scope.items
+ *          },
+ *          controller: DialogController
+ *       });
+ *       function DialogController($scope, $mdDialog, items) {
+ *         $scope.items = items;
+ *         $scope.closeDialog = function() {
+ *           $mdDialog.hide();
+ *         }
+ *       }
+ *     }
+ *   }
+ * })(angular);
+ * </hljs>
+ *
+ * ### JavaScript: promise API syntax, custom dialog template
+ * <hljs lang="js">
+ * (function(angular, undefined){
+ *   "use strict";
+ *
+ *   angular
+ *     .module('demoApp', ['ngMaterial'])
+ *     .controller('EmployeeController', EmployeeEditor)
+ *     .controller('GreetingController', GreetingController);
+ *
+ *   // Fictitious Employee Editor to show how to use simple and complex dialogs.
+ *
+ *   function EmployeeEditor($scope, $mdDialog) {
+ *     var alert;
+ *
+ *     $scope.showAlert = showAlert;
+ *     $scope.closeAlert = closeAlert;
+ *     $scope.showGreeting = showCustomGreeting;
+ *
+ *     $scope.hasAlert = function() { return !!alert };
+ *     $scope.userName = $scope.userName || 'Bobby';
+ *
+ *     // Dialog #1 - Show simple alert dialog and cache
+ *     // reference to dialog instance
+ *
+ *     function showAlert() {
+ *       alert = $mdDialog.alert()
+ *         .title('Attention, ' + $scope.userName)
+ *         .textContent('This is an example of how easy dialogs can be!')
+ *         .ok('Close');
+ *
+ *       $mdDialog
+ *           .show( alert )
+ *           .finally(function() {
+ *             alert = undefined;
+ *           });
+ *     }
+ *
+ *     // Close the specified dialog instance and resolve with 'finished' flag
+ *     // Normally this is not needed, just use '$mdDialog.hide()' to close
+ *     // the most recent dialog popup.
+ *
+ *     function closeAlert() {
+ *       $mdDialog.hide( alert, "finished" );
+ *       alert = undefined;
+ *     }
+ *
+ *     // Dialog #2 - Demonstrate more complex dialogs construction and popup.
+ *
+ *     function showCustomGreeting($event) {
+ *         $mdDialog.show({
+ *           targetEvent: $event,
+ *           template:
+ *             '<md-dialog>' +
+ *
+ *             '  <md-dialog-content>Hello {{ employee }}!</md-dialog-content>' +
+ *
+ *             '  <md-dialog-actions>' +
+ *             '    <md-button ng-click="closeDialog()" class="md-primary">' +
+ *             '      Close Greeting' +
+ *             '    </md-button>' +
+ *             '  </md-dialog-actions>' +
+ *             '</md-dialog>',
+ *           controller: 'GreetingController',
+ *           onComplete: afterShowAnimation,
+ *           locals: { employee: $scope.userName }
+ *         });
+ *
+ *         // When the 'enter' animation finishes...
+ *
+ *         function afterShowAnimation(scope, element, options) {
+ *            // post-show code here: DOM element focus, etc.
+ *         }
+ *     }
+ *
+ *     // Dialog #3 - Demonstrate use of ControllerAs and passing $scope to dialog
+ *     //             Here we used ng-controller="GreetingController as vm" and
+ *     //             $scope.vm === <controller instance>
+ *
+ *     function showCustomGreeting() {
+ *
+ *        $mdDialog.show({
+ *           clickOutsideToClose: true,
+ *
+ *           scope: $scope,        // use parent scope in template
+ *           preserveScope: true,  // do not forget this if use parent scope
+
+ *           // Since GreetingController is instantiated with ControllerAs syntax
+ *           // AND we are passing the parent '$scope' to the dialog, we MUST
+ *           // use 'vm.<xxx>' in the template markup
+ *
+ *           template: '<md-dialog>' +
+ *                     '  <md-dialog-content>' +
+ *                     '     Hi There {{vm.employee}}' +
+ *                     '  </md-dialog-content>' +
+ *                     '</md-dialog>',
+ *
+ *           controller: function DialogController($scope, $mdDialog) {
+ *             $scope.closeDialog = function() {
+ *               $mdDialog.hide();
+ *             }
+ *           }
+ *        });
+ *     }
+ *
+ *   }
+ *
+ *   // Greeting controller used with the more complex 'showCustomGreeting()' custom dialog
+ *
+ *   function GreetingController($scope, $mdDialog, employee) {
+ *     // Assigned from construction <code>locals</code> options...
+ *     $scope.employee = employee;
+ *
+ *     $scope.closeDialog = function() {
+ *       // Easily hides most recent dialog shown...
+ *       // no specific instance reference is needed.
+ *       $mdDialog.hide();
+ *     };
+ *   }
+ *
+ * })(angular);
+ * </hljs>
+ */
+
+/**
+ * @ngdoc method
+ * @name $mdDialog#alert
+ *
+ * @description
+ * Builds a preconfigured dialog with the specified message.
+ *
+ * @returns {obj} an `$mdDialogPreset` with the chainable configuration methods:
+ *
+ * - $mdDialogPreset#title(string) - Sets the alert title.
+ * - $mdDialogPreset#textContent(string) - Sets the alert message.
+ * - $mdDialogPreset#htmlContent(string) - Sets the alert message as HTML. Requires ngSanitize
+ *     module to be loaded. HTML is not run through Angular's compiler.
+ * - $mdDialogPreset#ok(string) - Sets the alert "Okay" button text.
+ * - $mdDialogPreset#theme(string) - Sets the theme of the alert dialog.
+ * - $mdDialogPreset#targetEvent(DOMClickEvent=) - A click's event object. When passed in as an option,
+ *     the location of the click will be used as the starting point for the opening animation
+ *     of the the dialog.
+ *
+ */
+
+/**
+ * @ngdoc method
+ * @name $mdDialog#confirm
+ *
+ * @description
+ * Builds a preconfigured dialog with the specified message. You can call show and the promise returned
+ * will be resolved only if the user clicks the confirm action on the dialog.
+ *
+ * @returns {obj} an `$mdDialogPreset` with the chainable configuration methods:
+ *
+ * Additionally, it supports the following methods:
+ *
+ * - $mdDialogPreset#title(string) - Sets the confirm title.
+ * - $mdDialogPreset#textContent(string) - Sets the confirm message.
+ * - $mdDialogPreset#htmlContent(string) - Sets the confirm message as HTML. Requires ngSanitize
+ *     module to be loaded. HTML is not run through Angular's compiler.
+ * - $mdDialogPreset#ok(string) - Sets the confirm "Okay" button text.
+ * - $mdDialogPreset#cancel(string) - Sets the confirm "Cancel" button text.
+ * - $mdDialogPreset#theme(string) - Sets the theme of the confirm dialog.
+ * - $mdDialogPreset#targetEvent(DOMClickEvent=) - A click's event object. When passed in as an option,
+ *     the location of the click will be used as the starting point for the opening animation
+ *     of the the dialog.
+ *
+ */
+
+/**
+ * @ngdoc method
+ * @name $mdDialog#show
+ *
+ * @description
+ * Show a dialog with the specified options.
+ *
+ * @param {object} optionsOrPreset Either provide an `$mdDialogPreset` returned from `alert()`, and
+ * `confirm()`, or an options object with the following properties:
+ *   - `templateUrl` - `{string=}`: The url of a template that will be used as the content
+ *   of the dialog.
+ *   - `template` - `{string=}`: HTML template to show in the dialog. This **must** be trusted HTML
+ *      with respect to Angular's [$sce service](https://docs.angularjs.org/api/ng/service/$sce).
+ *      This template should **never** be constructed with any kind of user input or user data.
+ *   - `autoWrap` - `{boolean=}`: Whether or not to automatically wrap the template with a
+ *     `<md-dialog>` tag if one is not provided. Defaults to true. Can be disabled if you provide a
+ *     custom dialog directive.
+ *   - `targetEvent` - `{DOMClickEvent=}`: A click's event object. When passed in as an option,
+ *     the location of the click will be used as the starting point for the opening animation
+ *     of the the dialog.
+ *   - `openFrom` - `{string|Element|object}`: The query selector, DOM element or the Rect object
+ *     that is used to determine the bounds (top, left, height, width) from which the Dialog will
+ *     originate.
+ *   - `closeTo` - `{string|Element|object}`: The query selector, DOM element or the Rect object
+ *     that is used to determine the bounds (top, left, height, width) to which the Dialog will
+ *     target.
+ *   - `scope` - `{object=}`: the scope to link the template / controller to. If none is specified,
+ *     it will create a new isolate scope.
+ *     This scope will be destroyed when the dialog is removed unless `preserveScope` is set to true.
+ *   - `preserveScope` - `{boolean=}`: whether to preserve the scope when the element is removed. Default is false
+ *   - `disableParentScroll` - `{boolean=}`: Whether to disable scrolling while the dialog is open.
+ *     Default true.
+ *   - `hasBackdrop` - `{boolean=}`: Whether there should be an opaque backdrop behind the dialog.
+ *     Default true.
+ *   - `clickOutsideToClose` - `{boolean=}`: Whether the user can click outside the dialog to
+ *     close it. Default false.
+ *   - `escapeToClose` - `{boolean=}`: Whether the user can press escape to close the dialog.
+ *     Default true.
+ *   - `focusOnOpen` - `{boolean=}`: An option to override focus behavior on open. Only disable if
+ *     focusing some other way, as focus management is required for dialogs to be accessible.
+ *     Defaults to true.
+ *   - `controller` - `{string=}`: The controller to associate with the dialog. The controller
+ *     will be injected with the local `$mdDialog`, which passes along a scope for the dialog.
+ *   - `locals` - `{object=}`: An object containing key/value pairs. The keys will be used as names
+ *     of values to inject into the controller. For example, `locals: {three: 3}` would inject
+ *     `three` into the controller, with the value 3. If `bindToController` is true, they will be
+ *     copied to the controller instead.
+ *   - `bindToController` - `bool`: bind the locals to the controller, instead of passing them in.
+ *     These values will not be available until after initialization.
+ *   - `resolve` - `{object=}`: Similar to locals, except it takes promises as values, and the
+ *     dialog will not open until all of the promises resolve.
+ *   - `controllerAs` - `{string=}`: An alias to assign the controller to on the scope.
+ *   - `parent` - `{element=}`: The element to append the dialog to. Defaults to appending
+ *     to the root element of the application.
+ *   - `onShowing` `{function=} Callback function used to announce the show() action is
+ *     starting.
+ *   - `onComplete` `{function=}`: Callback function used to announce when the show() action is
+ *     finished.
+ *   - `onRemoving` `{function=}`: Callback function used to announce the close/hide() action is
+ *     starting. This allows developers to run custom animations in parallel the close animations.
+ *   - `fullscreen` `{boolean=}`: An option to apply `.md-dialog-fullscreen` class on open.
+ * @returns {promise} A promise that can be resolved with `$mdDialog.hide()` or
+ * rejected with `$mdDialog.cancel()`.
+ */
+
+/**
+ * @ngdoc method
+ * @name $mdDialog#hide
+ *
+ * @description
+ * Hide an existing dialog and resolve the promise returned from `$mdDialog.show()`.
+ *
+ * @param {*=} response An argument for the resolved promise.
+ *
+ * @returns {promise} A promise that is resolved when the dialog has been closed.
+ */
+
+/**
+ * @ngdoc method
+ * @name $mdDialog#cancel
+ *
+ * @description
+ * Hide an existing dialog and reject the promise returned from `$mdDialog.show()`.
+ *
+ * @param {*=} response An argument for the rejected promise.
+ *
+ * @returns {promise} A promise that is resolved when the dialog has been closed.
+ */
+
+function MdDialogProvider($$interimElementProvider) {
+  // Elements to capture and redirect focus when the user presses tab at the dialog boundary.
+  var topFocusTrap, bottomFocusTrap;
+
+  advancedDialogOptions.$inject = ["$mdDialog", "$mdTheming"];
+  dialogDefaultOptions.$inject = ["$mdDialog", "$mdAria", "$mdUtil", "$mdConstant", "$animate", "$document", "$window", "$rootElement", "$log", "$injector"];
+  return $$interimElementProvider('$mdDialog')
+    .setDefaults({
+      methods: ['disableParentScroll', 'hasBackdrop', 'clickOutsideToClose', 'escapeToClose',
+          'targetEvent', 'closeTo', 'openFrom', 'parent', 'fullscreen'],
+      options: dialogDefaultOptions
+    })
+    .addPreset('alert', {
+      methods: ['title', 'htmlContent', 'textContent', 'content', 'ariaLabel', 'ok', 'theme',
+          'css'],
+      options: advancedDialogOptions
+    })
+    .addPreset('confirm', {
+      methods: ['title', 'htmlContent', 'textContent', 'content', 'ariaLabel', 'ok', 'cancel',
+          'theme', 'css'],
+      options: advancedDialogOptions
+    });
+
+  /* @ngInject */
+  function advancedDialogOptions($mdDialog, $mdTheming) {
+    return {
+      template: [
+        '<md-dialog md-theme="{{ dialog.theme }}" aria-label="{{ dialog.ariaLabel }}" ng-class="dialog.css">',
+        '  <md-dialog-content class="md-dialog-content" role="document" tabIndex="-1">',
+        '    <h2 class="md-title">{{ dialog.title }}</h2>',
+        '    <div ng-if="::dialog.mdHtmlContent" class="md-dialog-content-body" ',
+        '        ng-bind-html="::dialog.mdHtmlContent"></div>',
+        '    <div ng-if="::!dialog.mdHtmlContent" class="md-dialog-content-body">',
+        '      <p>{{::dialog.mdTextContent}}</p>',
+        '    </div>',
+        '  </md-dialog-content>',
+        '  <md-dialog-actions>',
+        '    <md-button ng-if="dialog.$type == \'confirm\'"' +
+        '               ng-click="dialog.abort()" class="md-primary">',
+        '      {{ dialog.cancel }}',
+        '    </md-button>',
+        '    <md-button ng-click="dialog.hide()" class="md-primary" md-autofocus="dialog.$type!=\'confirm\'">',
+        '      {{ dialog.ok }}',
+        '    </md-button>',
+        '  </md-dialog-actions>',
+        '</md-dialog>'
+      ].join('').replace(/\s\s+/g, ''),
+      controller: function mdDialogCtrl() {
+        this.hide = function() {
+          $mdDialog.hide(true);
+        };
+        this.abort = function() {
+          $mdDialog.cancel();
+        };
+      },
+      controllerAs: 'dialog',
+      bindToController: true,
+      theme: $mdTheming.defaultTheme()
+    };
+  }
+
+  /* @ngInject */
+  function dialogDefaultOptions($mdDialog, $mdAria, $mdUtil, $mdConstant, $animate, $document, $window, $rootElement, $log, $injector) {
+    return {
+      hasBackdrop: true,
+      isolateScope: true,
+      onShow: onShow,
+      onShowing: beforeShow,
+      onRemove: onRemove,
+      clickOutsideToClose: false,
+      escapeToClose: true,
+      targetEvent: null,
+      closeTo: null,
+      openFrom: null,
+      focusOnOpen: true,
+      disableParentScroll: true,
+      autoWrap: true,
+      fullscreen: false,
+      transformTemplate: function(template, options) {
+        return '<div class="md-dialog-container">' + validatedTemplate(template) + '</div>';
+
+        /**
+         * The specified template should contain a <md-dialog> wrapper element....
+         */
+        function validatedTemplate(template) {
+          if (options.autoWrap && !/<\/md-dialog>/g.test(template)) {
+            return '<md-dialog>' + (template || '') + '</md-dialog>';
+          } else {
+            return template || '';
+          }
+        }
+      }
+    };
+
+    function beforeShow(scope, element, options, controller) {
+      if (controller) {
+        controller.mdHtmlContent = controller.htmlContent || options.htmlContent || '';
+        controller.mdTextContent = controller.textContent || options.textContent ||
+            controller.content || options.content || '';
+
+        if (controller.mdHtmlContent && !$injector.has('$sanitize')) {
+          throw Error('The ngSanitize module must be loaded in order to use htmlContent.');
+        }
+
+        if (controller.mdHtmlContent && controller.mdTextContent) {
+          throw Error('md-dialog cannot have both `htmlContent` and `textContent`');
+        }
+      }
+    }
+
+    /** Show method for dialogs */
+    function onShow(scope, element, options, controller) {
+      angular.element($document[0].body).addClass('md-dialog-is-showing');
+
+      captureParentAndFromToElements(options);
+      configureAria(element.find('md-dialog'), options);
+      showBackdrop(scope, element, options);
+
+      return dialogPopIn(element, options)
+        .then(function() {
+          activateListeners(element, options);
+          lockScreenReader(element, options);
+          warnDeprecatedActions();
+          focusOnOpen();
+        });
+
+      /**
+       * Check to see if they used the deprecated .md-actions class and log a warning
+       */
+      function warnDeprecatedActions() {
+        var badActions = element[0].querySelectorAll('.md-actions');
+
+        if (badActions.length > 0) {
+          $log.warn('Using a class of md-actions is deprected, please use <md-dialog-actions>.');
+        }
+      }
+
+      /**
+       * For alerts, focus on content... otherwise focus on
+       * the close button (or equivalent)
+       */
+      function focusOnOpen() {
+        if (options.focusOnOpen) {
+          var target = $mdUtil.findFocusTarget(element) || findCloseButton();
+          target.focus();
+        }
+
+        /**
+         * If no element with class dialog-close, try to find the last
+         * button child in md-actions and assume it is a close button.
+         *
+         * If we find no actions at all, log a warning to the console.
+         */
+        function findCloseButton() {
+          var closeButton = element[0].querySelector('.dialog-close');
+          if (!closeButton) {
+            var actionButtons = element[0].querySelectorAll('.md-actions button, md-dialog-actions button');
+            closeButton = actionButtons[actionButtons.length - 1];
+          }
+          return angular.element(closeButton);
+        }
+      }
+    }
+
+    /**
+     * Remove function for all dialogs
+     */
+    function onRemove(scope, element, options) {
+      options.deactivateListeners();
+      options.unlockScreenReader();
+      options.hideBackdrop(options.$destroy);
+
+      // Remove the focus traps that we added earlier for keeping focus within the dialog.
+      topFocusTrap.parentNode.removeChild(topFocusTrap);
+      bottomFocusTrap.parentNode.removeChild(bottomFocusTrap);
+
+      // For navigation $destroy events, do a quick, non-animated removal,
+      // but for normal closes (from clicks, etc) animate the removal
+      return !!options.$destroy ? detachAndClean() : animateRemoval().then( detachAndClean );
+
+      /**
+       * For normal closes, animate the removal.
+       * For forced closes (like $destroy events), skip the animations
+       */
+      function animateRemoval() {
+        return dialogPopOut(element, options);
+      }
+
+      /**
+       * Detach the element
+       */
+      function detachAndClean() {
+        angular.element($document[0].body).removeClass('md-dialog-is-showing');
+        element.remove();
+
+        if (!options.$destroy) options.origin.focus();
+      }
+    }
+
+    /**
+     * Capture originator/trigger/from/to element information (if available)
+     * and the parent container for the dialog; defaults to the $rootElement
+     * unless overridden in the options.parent
+     */
+    function captureParentAndFromToElements(options) {
+          options.origin = angular.extend({
+            element: null,
+            bounds: null,
+            focus: angular.noop
+          }, options.origin || {});
+
+          options.parent   = getDomElement(options.parent, $rootElement);
+          options.closeTo  = getBoundingClientRect(getDomElement(options.closeTo));
+          options.openFrom = getBoundingClientRect(getDomElement(options.openFrom));
+
+          if ( options.targetEvent ) {
+            options.origin   = getBoundingClientRect(options.targetEvent.target, options.origin);
+          }
+
+          /**
+           * Identify the bounding RECT for the target element
+           *
+           */
+          function getBoundingClientRect (element, orig) {
+            var source = angular.element((element || {}));
+            if (source && source.length) {
+              // Compute and save the target element's bounding rect, so that if the
+              // element is hidden when the dialog closes, we can shrink the dialog
+              // back to the same position it expanded from.
+              //
+              // Checking if the source is a rect object or a DOM element
+              var bounds = {top:0,left:0,height:0,width:0};
+              var hasFn = angular.isFunction(source[0].getBoundingClientRect);
+
+              return angular.extend(orig || {}, {
+                  element : hasFn ? source : undefined,
+                  bounds  : hasFn ? source[0].getBoundingClientRect() : angular.extend({}, bounds, source[0]),
+                  focus   : angular.bind(source, source.focus),
+              });
+            }
+          }
+
+          /**
+           * If the specifier is a simple string selector, then query for
+           * the DOM element.
+           */
+          function getDomElement(element, defaultElement) {
+            if (angular.isString(element)) {
+              var simpleSelector = element,
+                container = $document[0].querySelectorAll(simpleSelector);
+                element = container.length ? container[0] : null;
+            }
+
+            // If we have a reference to a raw dom element, always wrap it in jqLite
+            return angular.element(element || defaultElement);
+          }
+
+        }
+
+    /**
+     * Listen for escape keys and outside clicks to auto close
+     */
+    function activateListeners(element, options) {
+      var window = angular.element($window);
+      var onWindowResize = $mdUtil.debounce(function(){
+        stretchDialogContainerToViewport(element, options);
+      }, 60);
+
+      var removeListeners = [];
+      var smartClose = function() {
+        // Only 'confirm' dialogs have a cancel button... escape/clickOutside will
+        // cancel or fallback to hide.
+        var closeFn = ( options.$type == 'alert' ) ? $mdDialog.hide : $mdDialog.cancel;
+        $mdUtil.nextTick(closeFn, true);
+      };
+
+      if (options.escapeToClose) {
+        var target = options.parent;
+        var keyHandlerFn = function(ev) {
+          if (ev.keyCode === $mdConstant.KEY_CODE.ESCAPE) {
+            ev.stopPropagation();
+            ev.preventDefault();
+
+            smartClose();
+          }
+        };
+
+        // Add keydown listeners
+        element.on('keydown', keyHandlerFn);
+        target.on('keydown', keyHandlerFn);
+        window.on('resize', onWindowResize);
+
+        // Queue remove listeners function
+        removeListeners.push(function() {
+
+          element.off('keydown', keyHandlerFn);
+          target.off('keydown', keyHandlerFn);
+          window.off('resize', onWindowResize);
+
+        });
+      }
+      if (options.clickOutsideToClose) {
+        var target = element;
+        var sourceElem;
+
+        // Keep track of the element on which the mouse originally went down
+        // so that we can only close the backdrop when the 'click' started on it.
+        // A simple 'click' handler does not work,
+        // it sets the target object as the element the mouse went down on.
+        var mousedownHandler = function(ev) {
+          sourceElem = ev.target;
+        };
+
+        // We check if our original element and the target is the backdrop
+        // because if the original was the backdrop and the target was inside the dialog
+        // we don't want to dialog to close.
+        var mouseupHandler = function(ev) {
+          if (sourceElem === target[0] && ev.target === target[0]) {
+            ev.stopPropagation();
+            ev.preventDefault();
+
+            smartClose();
+          }
+        };
+
+        // Add listeners
+        target.on('mousedown', mousedownHandler);
+        target.on('mouseup', mouseupHandler);
+
+        // Queue remove listeners function
+        removeListeners.push(function() {
+          target.off('mousedown', mousedownHandler);
+          target.off('mouseup', mouseupHandler);
+        });
+      }
+
+      // Attach specific `remove` listener handler
+      options.deactivateListeners = function() {
+        removeListeners.forEach(function(removeFn) {
+          removeFn();
+        });
+        options.deactivateListeners = null;
+      };
+    }
+
+    /**
+     * Show modal backdrop element...
+     */
+    function showBackdrop(scope, element, options) {
+
+      if (options.disableParentScroll) {
+        // !! DO this before creating the backdrop; since disableScrollAround()
+        //    configures the scroll offset; which is used by mdBackDrop postLink()
+        options.restoreScroll = $mdUtil.disableScrollAround(element, options.parent);
+      }
+
+      if (options.hasBackdrop) {
+        options.backdrop = $mdUtil.createBackdrop(scope, "md-dialog-backdrop md-opaque");
+        $animate.enter(options.backdrop, options.parent);
+      }
+
+      /**
+       * Hide modal backdrop element...
+       */
+      options.hideBackdrop = function hideBackdrop($destroy) {
+        if (options.backdrop) {
+          if ( !!$destroy ) options.backdrop.remove();
+          else              $animate.leave(options.backdrop);
+        }
+
+        if (options.disableParentScroll) {
+          options.restoreScroll();
+          delete options.restoreScroll;
+        }
+
+        options.hideBackdrop = null;
+      }
+    }
+
+    /**
+     * Inject ARIA-specific attributes appropriate for Dialogs
+     */
+    function configureAria(element, options) {
+
+      var role = (options.$type === 'alert') ? 'alertdialog' : 'dialog';
+      var dialogContent = element.find('md-dialog-content');
+      var dialogId = element.attr('id') || ('dialog_' + $mdUtil.nextUid());
+
+      element.attr({
+        'role': role,
+        'tabIndex': '-1'
+      });
+
+      if (dialogContent.length === 0) {
+        dialogContent = element;
+      }
+
+      dialogContent.attr('id', dialogId);
+      element.attr('aria-describedby', dialogId);
+
+      if (options.ariaLabel) {
+        $mdAria.expect(element, 'aria-label', options.ariaLabel);
+      }
+      else {
+        $mdAria.expectAsync(element, 'aria-label', function() {
+          var words = dialogContent.text().split(/\s+/);
+          if (words.length > 3) words = words.slice(0, 3).concat('...');
+          return words.join(' ');
+        });
+      }
+
+      // Set up elements before and after the dialog content to capture focus and
+      // redirect back into the dialog.
+      topFocusTrap = document.createElement('div');
+      topFocusTrap.classList.add('md-dialog-focus-trap');
+      topFocusTrap.tabIndex = 0;
+
+      bottomFocusTrap = topFocusTrap.cloneNode(false);
+
+      // When focus is about to move out of the dialog, we want to intercept it and redirect it
+      // back to the dialog element.
+      var focusHandler = angular.bind(element, element.focus);
+      topFocusTrap.addEventListener('focus', focusHandler);
+      bottomFocusTrap.addEventListener('focus', focusHandler);
+
+      // The top focus trap inserted immeidately before the md-dialog element (as a sibling).
+      // The bottom focus trap is inserted at the very end of the md-dialog element (as a child).
+      element[0].parentNode.insertBefore(topFocusTrap, element[0]);
+      element.append(bottomFocusTrap);
+    }
+
+    /**
+     * Prevents screen reader interaction behind modal window
+     * on swipe interfaces
+     */
+    function lockScreenReader(element, options) {
+      var isHidden = true;
+
+      // get raw DOM node
+      walkDOM(element[0]);
+
+      options.unlockScreenReader = function() {
+        isHidden = false;
+        walkDOM(element[0]);
+
+        options.unlockScreenReader = null;
+      };
+
+      /**
+       * Walk DOM to apply or remove aria-hidden on sibling nodes
+       * and parent sibling nodes
+       *
+       */
+      function walkDOM(element) {
+        while (element.parentNode) {
+          if (element === document.body) {
+            return;
+          }
+          var children = element.parentNode.children;
+          for (var i = 0; i < children.length; i++) {
+            // skip over child if it is an ascendant of the dialog
+            // or a script or style tag
+            if (element !== children[i] && !isNodeOneOf(children[i], ['SCRIPT', 'STYLE'])) {
+              children[i].setAttribute('aria-hidden', isHidden);
+            }
+          }
+
+          walkDOM(element = element.parentNode);
+        }
+      }
+    }
+
+    /**
+     * Ensure the dialog container fill-stretches to the viewport
+     */
+    function stretchDialogContainerToViewport(container, options) {
+      var isFixed = $window.getComputedStyle($document[0].body).position == 'fixed';
+      var backdrop = options.backdrop ? $window.getComputedStyle(options.backdrop[0]) : null;
+      var height = backdrop ? Math.min($document[0].body.clientHeight, Math.ceil(Math.abs(parseInt(backdrop.height, 10)))) : 0;
+
+      container.css({
+        top: (isFixed ? $mdUtil.scrollTop(options.parent) : 0) + 'px',
+        height: height ? height + 'px' : '100%'
+      });
+
+      return container;
+    }
+
+    /**
+     *  Dialog open and pop-in animation
+     */
+    function dialogPopIn(container, options) {
+      // Add the `md-dialog-container` to the DOM
+      options.parent.append(container);
+      stretchDialogContainerToViewport(container, options);
+
+      var dialogEl = container.find('md-dialog');
+      var animator = $mdUtil.dom.animator;
+      var buildTranslateToOrigin = animator.calculateZoomToOrigin;
+      var translateOptions = {transitionInClass: 'md-transition-in', transitionOutClass: 'md-transition-out'};
+      var from = animator.toTransformCss(buildTranslateToOrigin(dialogEl, options.openFrom || options.origin));
+      var to = animator.toTransformCss("");  // defaults to center display (or parent or $rootElement)
+
+      if (options.fullscreen) {
+        dialogEl.addClass('md-dialog-fullscreen');
+      }
+
+      return animator
+        .translate3d(dialogEl, from, to, translateOptions)
+        .then(function(animateReversal) {
+          // Build a reversal translate function synched to this translation...
+          options.reverseAnimate = function() {
+            delete options.reverseAnimate;
+
+            if (options.closeTo) {
+              // Using the opposite classes to create a close animation to the closeTo element
+              translateOptions = {transitionInClass: 'md-transition-out', transitionOutClass: 'md-transition-in'};
+              from = to;
+              to = animator.toTransformCss(buildTranslateToOrigin(dialogEl, options.closeTo));
+
+              return animator
+                .translate3d(dialogEl, from, to,translateOptions);
+            }
+
+            return animateReversal(
+              animator.toTransformCss(
+                // in case the origin element has moved or is hidden,
+                // let's recalculate the translateCSS
+                buildTranslateToOrigin(dialogEl, options.origin)
+              )
+            );
+
+          };
+          return true;
+        });
+    }
+
+    /**
+     * Dialog close and pop-out animation
+     */
+    function dialogPopOut(container, options) {
+      return options.reverseAnimate();
+    }
+
+    /**
+     * Utility function to filter out raw DOM nodes
+     */
+    function isNodeOneOf(elem, nodeTypeArray) {
+      if (nodeTypeArray.indexOf(elem.nodeName) !== -1) {
+        return true;
+      }
+    }
+
+  }
+}
+MdDialogProvider.$inject = ["$$interimElementProvider"];
 
 })();
 (function(){
@@ -8787,990 +9771,6 @@ function iosScrollFix(node) {
 
 /**
  * @ngdoc module
- * @name material.components.dialog
- */
-angular
-  .module('material.components.dialog', [
-    'material.core',
-    'material.components.backdrop'
-  ])
-  .directive('mdDialog', MdDialogDirective)
-  .provider('$mdDialog', MdDialogProvider);
-
-function MdDialogDirective($$rAF, $mdTheming, $mdDialog) {
-  return {
-    restrict: 'E',
-    link: function(scope, element, attr) {
-      $mdTheming(element);
-      $$rAF(function() {
-        var images;
-        var content = element[0].querySelector('md-dialog-content');
-
-        if (content) {
-          images = content.getElementsByTagName('img');
-          addOverflowClass();
-          //-- delayed image loading may impact scroll height, check after images are loaded
-          angular.element(images).on('load', addOverflowClass);
-        }
-
-        scope.$on('$destroy', function() {
-          $mdDialog.destroy(element);
-        });
-
-        /**
-         *
-         */
-        function addOverflowClass() {
-          element.toggleClass('md-content-overflow', content.scrollHeight > content.clientHeight);
-        }
-
-
-      });
-    }
-  };
-}
-MdDialogDirective.$inject = ["$$rAF", "$mdTheming", "$mdDialog"];
-
-/**
- * @ngdoc service
- * @name $mdDialog
- * @module material.components.dialog
- *
- * @description
- * `$mdDialog` opens a dialog over the app to inform users about critical information or require
- *  them to make decisions. There are two approaches for setup: a simple promise API
- *  and regular object syntax.
- *
- * ## Restrictions
- *
- * - The dialog is always given an isolate scope.
- * - The dialog's template must have an outer `<md-dialog>` element.
- *   Inside, use an `<md-dialog-content>` element for the dialog's content, and use
- *   an `<md-dialog-actions>` element for the dialog's actions.
- * - Dialogs must cover the entire application to keep interactions inside of them.
- * Use the `parent` option to change where dialogs are appended.
- *
- * ## Sizing
- * - Complex dialogs can be sized with `flex="percentage"`, i.e. `flex="66"`.
- * - Default max-width is 80% of the `rootElement` or `parent`.
- *
- * ## Css
- * - `.md-dialog-content` - class that sets the padding on the content as the spec file
- *
- * @usage
- * <hljs lang="html">
- * <div  ng-app="demoApp" ng-controller="EmployeeController">
- *   <div>
- *     <md-button ng-click="showAlert()" class="md-raised md-warn">
- *       Employee Alert!
- *       </md-button>
- *   </div>
- *   <div>
- *     <md-button ng-click="showDialog($event)" class="md-raised">
- *       Custom Dialog
- *       </md-button>
- *   </div>
- *   <div>
- *     <md-button ng-click="closeAlert()" ng-disabled="!hasAlert()" class="md-raised">
- *       Close Alert
- *     </md-button>
- *   </div>
- *   <div>
- *     <md-button ng-click="showGreeting($event)" class="md-raised md-primary" >
- *       Greet Employee
- *       </md-button>
- *   </div>
- * </div>
- * </hljs>
- *
- * ### JavaScript: object syntax
- * <hljs lang="js">
- * (function(angular, undefined){
- *   "use strict";
- *
- *   angular
- *    .module('demoApp', ['ngMaterial'])
- *    .controller('AppCtrl', AppController);
- *
- *   function AppController($scope, $mdDialog) {
- *     var alert;
- *     $scope.showAlert = showAlert;
- *     $scope.showDialog = showDialog;
- *     $scope.items = [1, 2, 3];
- *
- *     // Internal method
- *     function showAlert() {
- *       alert = $mdDialog.alert({
- *         title: 'Attention',
- *         content: 'This is an example of how easy dialogs can be!',
- *         ok: 'Close'
- *       });
- *
- *       $mdDialog
- *         .show( alert )
- *         .finally(function() {
- *           alert = undefined;
- *         });
- *     }
- *
- *     function showDialog($event) {
- *        var parentEl = angular.element(document.body);
- *        $mdDialog.show({
- *          parent: parentEl,
- *          targetEvent: $event,
- *          template:
- *            '<md-dialog aria-label="List dialog">' +
- *            '  <md-dialog-content>'+
- *            '    <md-list>'+
- *            '      <md-list-item ng-repeat="item in items">'+
- *            '       <p>Number {{item}}</p>' +
- *            '      </md-item>'+
- *            '    </md-list>'+
- *            '  </md-dialog-content>' +
- *            '  <md-dialog-actions>' +
- *            '    <md-button ng-click="closeDialog()" class="md-primary">' +
- *            '      Close Dialog' +
- *            '    </md-button>' +
- *            '  </md-dialog-actions>' +
- *            '</md-dialog>',
- *          locals: {
- *            items: $scope.items
- *          },
- *          controller: DialogController
- *       });
- *       function DialogController($scope, $mdDialog, items) {
- *         $scope.items = items;
- *         $scope.closeDialog = function() {
- *           $mdDialog.hide();
- *         }
- *       }
- *     }
- *   }
- * })(angular);
- * </hljs>
- *
- * ### JavaScript: promise API syntax, custom dialog template
- * <hljs lang="js">
- * (function(angular, undefined){
- *   "use strict";
- *
- *   angular
- *     .module('demoApp', ['ngMaterial'])
- *     .controller('EmployeeController', EmployeeEditor)
- *     .controller('GreetingController', GreetingController);
- *
- *   // Fictitious Employee Editor to show how to use simple and complex dialogs.
- *
- *   function EmployeeEditor($scope, $mdDialog) {
- *     var alert;
- *
- *     $scope.showAlert = showAlert;
- *     $scope.closeAlert = closeAlert;
- *     $scope.showGreeting = showCustomGreeting;
- *
- *     $scope.hasAlert = function() { return !!alert };
- *     $scope.userName = $scope.userName || 'Bobby';
- *
- *     // Dialog #1 - Show simple alert dialog and cache
- *     // reference to dialog instance
- *
- *     function showAlert() {
- *       alert = $mdDialog.alert()
- *         .title('Attention, ' + $scope.userName)
- *         .textContent('This is an example of how easy dialogs can be!')
- *         .ok('Close');
- *
- *       $mdDialog
- *           .show( alert )
- *           .finally(function() {
- *             alert = undefined;
- *           });
- *     }
- *
- *     // Close the specified dialog instance and resolve with 'finished' flag
- *     // Normally this is not needed, just use '$mdDialog.hide()' to close
- *     // the most recent dialog popup.
- *
- *     function closeAlert() {
- *       $mdDialog.hide( alert, "finished" );
- *       alert = undefined;
- *     }
- *
- *     // Dialog #2 - Demonstrate more complex dialogs construction and popup.
- *
- *     function showCustomGreeting($event) {
- *         $mdDialog.show({
- *           targetEvent: $event,
- *           template:
- *             '<md-dialog>' +
- *
- *             '  <md-dialog-content>Hello {{ employee }}!</md-dialog-content>' +
- *
- *             '  <md-dialog-actions>' +
- *             '    <md-button ng-click="closeDialog()" class="md-primary">' +
- *             '      Close Greeting' +
- *             '    </md-button>' +
- *             '  </md-dialog-actions>' +
- *             '</md-dialog>',
- *           controller: 'GreetingController',
- *           onComplete: afterShowAnimation,
- *           locals: { employee: $scope.userName }
- *         });
- *
- *         // When the 'enter' animation finishes...
- *
- *         function afterShowAnimation(scope, element, options) {
- *            // post-show code here: DOM element focus, etc.
- *         }
- *     }
- *
- *     // Dialog #3 - Demonstrate use of ControllerAs and passing $scope to dialog
- *     //             Here we used ng-controller="GreetingController as vm" and
- *     //             $scope.vm === <controller instance>
- *
- *     function showCustomGreeting() {
- *
- *        $mdDialog.show({
- *           clickOutsideToClose: true,
- *
- *           scope: $scope,        // use parent scope in template
- *           preserveScope: true,  // do not forget this if use parent scope
-
- *           // Since GreetingController is instantiated with ControllerAs syntax
- *           // AND we are passing the parent '$scope' to the dialog, we MUST
- *           // use 'vm.<xxx>' in the template markup
- *
- *           template: '<md-dialog>' +
- *                     '  <md-dialog-content>' +
- *                     '     Hi There {{vm.employee}}' +
- *                     '  </md-dialog-content>' +
- *                     '</md-dialog>',
- *
- *           controller: function DialogController($scope, $mdDialog) {
- *             $scope.closeDialog = function() {
- *               $mdDialog.hide();
- *             }
- *           }
- *        });
- *     }
- *
- *   }
- *
- *   // Greeting controller used with the more complex 'showCustomGreeting()' custom dialog
- *
- *   function GreetingController($scope, $mdDialog, employee) {
- *     // Assigned from construction <code>locals</code> options...
- *     $scope.employee = employee;
- *
- *     $scope.closeDialog = function() {
- *       // Easily hides most recent dialog shown...
- *       // no specific instance reference is needed.
- *       $mdDialog.hide();
- *     };
- *   }
- *
- * })(angular);
- * </hljs>
- */
-
-/**
- * @ngdoc method
- * @name $mdDialog#alert
- *
- * @description
- * Builds a preconfigured dialog with the specified message.
- *
- * @returns {obj} an `$mdDialogPreset` with the chainable configuration methods:
- *
- * - $mdDialogPreset#title(string) - Sets the alert title.
- * - $mdDialogPreset#textContent(string) - Sets the alert message.
- * - $mdDialogPreset#htmlContent(string) - Sets the alert message as HTML. Requires ngSanitize
- *     module to be loaded. HTML is not run through Angular's compiler.
- * - $mdDialogPreset#ok(string) - Sets the alert "Okay" button text.
- * - $mdDialogPreset#theme(string) - Sets the theme of the alert dialog.
- * - $mdDialogPreset#targetEvent(DOMClickEvent=) - A click's event object. When passed in as an option,
- *     the location of the click will be used as the starting point for the opening animation
- *     of the the dialog.
- *
- */
-
-/**
- * @ngdoc method
- * @name $mdDialog#confirm
- *
- * @description
- * Builds a preconfigured dialog with the specified message. You can call show and the promise returned
- * will be resolved only if the user clicks the confirm action on the dialog.
- *
- * @returns {obj} an `$mdDialogPreset` with the chainable configuration methods:
- *
- * Additionally, it supports the following methods:
- *
- * - $mdDialogPreset#title(string) - Sets the confirm title.
- * - $mdDialogPreset#textContent(string) - Sets the confirm message.
- * - $mdDialogPreset#htmlContent(string) - Sets the confirm message as HTML. Requires ngSanitize
- *     module to be loaded. HTML is not run through Angular's compiler.
- * - $mdDialogPreset#ok(string) - Sets the confirm "Okay" button text.
- * - $mdDialogPreset#cancel(string) - Sets the confirm "Cancel" button text.
- * - $mdDialogPreset#theme(string) - Sets the theme of the confirm dialog.
- * - $mdDialogPreset#targetEvent(DOMClickEvent=) - A click's event object. When passed in as an option,
- *     the location of the click will be used as the starting point for the opening animation
- *     of the the dialog.
- *
- */
-
-/**
- * @ngdoc method
- * @name $mdDialog#show
- *
- * @description
- * Show a dialog with the specified options.
- *
- * @param {object} optionsOrPreset Either provide an `$mdDialogPreset` returned from `alert()`, and
- * `confirm()`, or an options object with the following properties:
- *   - `templateUrl` - `{string=}`: The url of a template that will be used as the content
- *   of the dialog.
- *   - `template` - `{string=}`: HTML template to show in the dialog. This **must** be trusted HTML
- *      with respect to Angular's [$sce service](https://docs.angularjs.org/api/ng/service/$sce).
- *      This template should **never** be constructed with any kind of user input or user data.
- *   - `autoWrap` - `{boolean=}`: Whether or not to automatically wrap the template with a
- *     `<md-dialog>` tag if one is not provided. Defaults to true. Can be disabled if you provide a
- *     custom dialog directive.
- *   - `targetEvent` - `{DOMClickEvent=}`: A click's event object. When passed in as an option,
- *     the location of the click will be used as the starting point for the opening animation
- *     of the the dialog.
- *   - `openFrom` - `{string|Element|object}`: The query selector, DOM element or the Rect object
- *     that is used to determine the bounds (top, left, height, width) from which the Dialog will
- *     originate.
- *   - `closeTo` - `{string|Element|object}`: The query selector, DOM element or the Rect object
- *     that is used to determine the bounds (top, left, height, width) to which the Dialog will
- *     target.
- *   - `scope` - `{object=}`: the scope to link the template / controller to. If none is specified,
- *     it will create a new isolate scope.
- *     This scope will be destroyed when the dialog is removed unless `preserveScope` is set to true.
- *   - `preserveScope` - `{boolean=}`: whether to preserve the scope when the element is removed. Default is false
- *   - `disableParentScroll` - `{boolean=}`: Whether to disable scrolling while the dialog is open.
- *     Default true.
- *   - `hasBackdrop` - `{boolean=}`: Whether there should be an opaque backdrop behind the dialog.
- *     Default true.
- *   - `clickOutsideToClose` - `{boolean=}`: Whether the user can click outside the dialog to
- *     close it. Default false.
- *   - `escapeToClose` - `{boolean=}`: Whether the user can press escape to close the dialog.
- *     Default true.
- *   - `focusOnOpen` - `{boolean=}`: An option to override focus behavior on open. Only disable if
- *     focusing some other way, as focus management is required for dialogs to be accessible.
- *     Defaults to true.
- *   - `controller` - `{string=}`: The controller to associate with the dialog. The controller
- *     will be injected with the local `$mdDialog`, which passes along a scope for the dialog.
- *   - `locals` - `{object=}`: An object containing key/value pairs. The keys will be used as names
- *     of values to inject into the controller. For example, `locals: {three: 3}` would inject
- *     `three` into the controller, with the value 3. If `bindToController` is true, they will be
- *     copied to the controller instead.
- *   - `bindToController` - `bool`: bind the locals to the controller, instead of passing them in.
- *     These values will not be available until after initialization.
- *   - `resolve` - `{object=}`: Similar to locals, except it takes promises as values, and the
- *     dialog will not open until all of the promises resolve.
- *   - `controllerAs` - `{string=}`: An alias to assign the controller to on the scope.
- *   - `parent` - `{element=}`: The element to append the dialog to. Defaults to appending
- *     to the root element of the application.
- *   - `onShowing` `{function=} Callback function used to announce the show() action is
- *     starting.
- *   - `onComplete` `{function=}`: Callback function used to announce when the show() action is
- *     finished.
- *   - `onRemoving` `{function=}`: Callback function used to announce the close/hide() action is
- *     starting. This allows developers to run custom animations in parallel the close animations.
- *   - `fullscreen` `{boolean=}`: An option to apply `.md-dialog-fullscreen` class on open.
- * @returns {promise} A promise that can be resolved with `$mdDialog.hide()` or
- * rejected with `$mdDialog.cancel()`.
- */
-
-/**
- * @ngdoc method
- * @name $mdDialog#hide
- *
- * @description
- * Hide an existing dialog and resolve the promise returned from `$mdDialog.show()`.
- *
- * @param {*=} response An argument for the resolved promise.
- *
- * @returns {promise} A promise that is resolved when the dialog has been closed.
- */
-
-/**
- * @ngdoc method
- * @name $mdDialog#cancel
- *
- * @description
- * Hide an existing dialog and reject the promise returned from `$mdDialog.show()`.
- *
- * @param {*=} response An argument for the rejected promise.
- *
- * @returns {promise} A promise that is resolved when the dialog has been closed.
- */
-
-function MdDialogProvider($$interimElementProvider) {
-  // Elements to capture and redirect focus when the user presses tab at the dialog boundary.
-  var topFocusTrap, bottomFocusTrap;
-
-  advancedDialogOptions.$inject = ["$mdDialog", "$mdTheming"];
-  dialogDefaultOptions.$inject = ["$mdDialog", "$mdAria", "$mdUtil", "$mdConstant", "$animate", "$document", "$window", "$rootElement", "$log", "$injector"];
-  return $$interimElementProvider('$mdDialog')
-    .setDefaults({
-      methods: ['disableParentScroll', 'hasBackdrop', 'clickOutsideToClose', 'escapeToClose',
-          'targetEvent', 'closeTo', 'openFrom', 'parent', 'fullscreen'],
-      options: dialogDefaultOptions
-    })
-    .addPreset('alert', {
-      methods: ['title', 'htmlContent', 'textContent', 'content', 'ariaLabel', 'ok', 'theme',
-          'css'],
-      options: advancedDialogOptions
-    })
-    .addPreset('confirm', {
-      methods: ['title', 'htmlContent', 'textContent', 'content', 'ariaLabel', 'ok', 'cancel',
-          'theme', 'css'],
-      options: advancedDialogOptions
-    });
-
-  /* @ngInject */
-  function advancedDialogOptions($mdDialog, $mdTheming) {
-    return {
-      template: [
-        '<md-dialog md-theme="{{ dialog.theme }}" aria-label="{{ dialog.ariaLabel }}" ng-class="dialog.css">',
-        '  <md-dialog-content class="md-dialog-content" role="document" tabIndex="-1">',
-        '    <h2 class="md-title">{{ dialog.title }}</h2>',
-        '    <div ng-if="::dialog.mdHtmlContent" class="md-dialog-content-body" ',
-        '        ng-bind-html="::dialog.mdHtmlContent"></div>',
-        '    <div ng-if="::!dialog.mdHtmlContent" class="md-dialog-content-body">',
-        '      <p>{{::dialog.mdTextContent}}</p>',
-        '    </div>',
-        '  </md-dialog-content>',
-        '  <md-dialog-actions>',
-        '    <md-button ng-if="dialog.$type == \'confirm\'"' +
-        '               ng-click="dialog.abort()" class="md-primary">',
-        '      {{ dialog.cancel }}',
-        '    </md-button>',
-        '    <md-button ng-click="dialog.hide()" class="md-primary" md-autofocus="dialog.$type!=\'confirm\'">',
-        '      {{ dialog.ok }}',
-        '    </md-button>',
-        '  </md-dialog-actions>',
-        '</md-dialog>'
-      ].join('').replace(/\s\s+/g, ''),
-      controller: function mdDialogCtrl() {
-        this.hide = function() {
-          $mdDialog.hide(true);
-        };
-        this.abort = function() {
-          $mdDialog.cancel();
-        };
-      },
-      controllerAs: 'dialog',
-      bindToController: true,
-      theme: $mdTheming.defaultTheme()
-    };
-  }
-
-  /* @ngInject */
-  function dialogDefaultOptions($mdDialog, $mdAria, $mdUtil, $mdConstant, $animate, $document, $window, $rootElement, $log, $injector) {
-    return {
-      hasBackdrop: true,
-      isolateScope: true,
-      onShow: onShow,
-      onShowing: beforeShow,
-      onRemove: onRemove,
-      clickOutsideToClose: false,
-      escapeToClose: true,
-      targetEvent: null,
-      closeTo: null,
-      openFrom: null,
-      focusOnOpen: true,
-      disableParentScroll: true,
-      autoWrap: true,
-      fullscreen: false,
-      transformTemplate: function(template, options) {
-        return '<div class="md-dialog-container">' + validatedTemplate(template) + '</div>';
-
-        /**
-         * The specified template should contain a <md-dialog> wrapper element....
-         */
-        function validatedTemplate(template) {
-          if (options.autoWrap && !/<\/md-dialog>/g.test(template)) {
-            return '<md-dialog>' + (template || '') + '</md-dialog>';
-          } else {
-            return template || '';
-          }
-        }
-      }
-    };
-
-    function beforeShow(scope, element, options, controller) {
-      if (controller) {
-        controller.mdHtmlContent = controller.htmlContent || options.htmlContent || '';
-        controller.mdTextContent = controller.textContent || options.textContent ||
-            controller.content || options.content || '';
-
-        if (controller.mdHtmlContent && !$injector.has('$sanitize')) {
-          throw Error('The ngSanitize module must be loaded in order to use htmlContent.');
-        }
-
-        if (controller.mdHtmlContent && controller.mdTextContent) {
-          throw Error('md-dialog cannot have both `htmlContent` and `textContent`');
-        }
-      }
-    }
-
-    /** Show method for dialogs */
-    function onShow(scope, element, options, controller) {
-      angular.element($document[0].body).addClass('md-dialog-is-showing');
-
-      captureParentAndFromToElements(options);
-      configureAria(element.find('md-dialog'), options);
-      showBackdrop(scope, element, options);
-
-      return dialogPopIn(element, options)
-        .then(function() {
-          activateListeners(element, options);
-          lockScreenReader(element, options);
-          warnDeprecatedActions();
-          focusOnOpen();
-        });
-
-      /**
-       * Check to see if they used the deprecated .md-actions class and log a warning
-       */
-      function warnDeprecatedActions() {
-        var badActions = element[0].querySelectorAll('.md-actions');
-
-        if (badActions.length > 0) {
-          $log.warn('Using a class of md-actions is deprected, please use <md-dialog-actions>.');
-        }
-      }
-
-      /**
-       * For alerts, focus on content... otherwise focus on
-       * the close button (or equivalent)
-       */
-      function focusOnOpen() {
-        if (options.focusOnOpen) {
-          var target = $mdUtil.findFocusTarget(element) || findCloseButton();
-          target.focus();
-        }
-
-        /**
-         * If no element with class dialog-close, try to find the last
-         * button child in md-actions and assume it is a close button.
-         *
-         * If we find no actions at all, log a warning to the console.
-         */
-        function findCloseButton() {
-          var closeButton = element[0].querySelector('.dialog-close');
-          if (!closeButton) {
-            var actionButtons = element[0].querySelectorAll('.md-actions button, md-dialog-actions button');
-            closeButton = actionButtons[actionButtons.length - 1];
-          }
-          return angular.element(closeButton);
-        }
-      }
-    }
-
-    /**
-     * Remove function for all dialogs
-     */
-    function onRemove(scope, element, options) {
-      options.deactivateListeners();
-      options.unlockScreenReader();
-      options.hideBackdrop(options.$destroy);
-
-      // Remove the focus traps that we added earlier for keeping focus within the dialog.
-      topFocusTrap.parentNode.removeChild(topFocusTrap);
-      bottomFocusTrap.parentNode.removeChild(bottomFocusTrap);
-
-      // For navigation $destroy events, do a quick, non-animated removal,
-      // but for normal closes (from clicks, etc) animate the removal
-      return !!options.$destroy ? detachAndClean() : animateRemoval().then( detachAndClean );
-
-      /**
-       * For normal closes, animate the removal.
-       * For forced closes (like $destroy events), skip the animations
-       */
-      function animateRemoval() {
-        return dialogPopOut(element, options);
-      }
-
-      /**
-       * Detach the element
-       */
-      function detachAndClean() {
-        angular.element($document[0].body).removeClass('md-dialog-is-showing');
-        element.remove();
-
-        if (!options.$destroy) options.origin.focus();
-      }
-    }
-
-    /**
-     * Capture originator/trigger/from/to element information (if available)
-     * and the parent container for the dialog; defaults to the $rootElement
-     * unless overridden in the options.parent
-     */
-    function captureParentAndFromToElements(options) {
-          options.origin = angular.extend({
-            element: null,
-            bounds: null,
-            focus: angular.noop
-          }, options.origin || {});
-
-          options.parent   = getDomElement(options.parent, $rootElement);
-          options.closeTo  = getBoundingClientRect(getDomElement(options.closeTo));
-          options.openFrom = getBoundingClientRect(getDomElement(options.openFrom));
-
-          if ( options.targetEvent ) {
-            options.origin   = getBoundingClientRect(options.targetEvent.target, options.origin);
-          }
-
-          /**
-           * Identify the bounding RECT for the target element
-           *
-           */
-          function getBoundingClientRect (element, orig) {
-            var source = angular.element((element || {}));
-            if (source && source.length) {
-              // Compute and save the target element's bounding rect, so that if the
-              // element is hidden when the dialog closes, we can shrink the dialog
-              // back to the same position it expanded from.
-              //
-              // Checking if the source is a rect object or a DOM element
-              var bounds = {top:0,left:0,height:0,width:0};
-              var hasFn = angular.isFunction(source[0].getBoundingClientRect);
-
-              return angular.extend(orig || {}, {
-                  element : hasFn ? source : undefined,
-                  bounds  : hasFn ? source[0].getBoundingClientRect() : angular.extend({}, bounds, source[0]),
-                  focus   : angular.bind(source, source.focus),
-              });
-            }
-          }
-
-          /**
-           * If the specifier is a simple string selector, then query for
-           * the DOM element.
-           */
-          function getDomElement(element, defaultElement) {
-            if (angular.isString(element)) {
-              var simpleSelector = element,
-                container = $document[0].querySelectorAll(simpleSelector);
-                element = container.length ? container[0] : null;
-            }
-
-            // If we have a reference to a raw dom element, always wrap it in jqLite
-            return angular.element(element || defaultElement);
-          }
-
-        }
-
-    /**
-     * Listen for escape keys and outside clicks to auto close
-     */
-    function activateListeners(element, options) {
-      var window = angular.element($window);
-      var onWindowResize = $mdUtil.debounce(function(){
-        stretchDialogContainerToViewport(element, options);
-      }, 60);
-
-      var removeListeners = [];
-      var smartClose = function() {
-        // Only 'confirm' dialogs have a cancel button... escape/clickOutside will
-        // cancel or fallback to hide.
-        var closeFn = ( options.$type == 'alert' ) ? $mdDialog.hide : $mdDialog.cancel;
-        $mdUtil.nextTick(closeFn, true);
-      };
-
-      if (options.escapeToClose) {
-        var target = options.parent;
-        var keyHandlerFn = function(ev) {
-          if (ev.keyCode === $mdConstant.KEY_CODE.ESCAPE) {
-            ev.stopPropagation();
-            ev.preventDefault();
-
-            smartClose();
-          }
-        };
-
-        // Add keydown listeners
-        element.on('keydown', keyHandlerFn);
-        target.on('keydown', keyHandlerFn);
-        window.on('resize', onWindowResize);
-
-        // Queue remove listeners function
-        removeListeners.push(function() {
-
-          element.off('keydown', keyHandlerFn);
-          target.off('keydown', keyHandlerFn);
-          window.off('resize', onWindowResize);
-
-        });
-      }
-      if (options.clickOutsideToClose) {
-        var target = element;
-        var sourceElem;
-
-        // Keep track of the element on which the mouse originally went down
-        // so that we can only close the backdrop when the 'click' started on it.
-        // A simple 'click' handler does not work,
-        // it sets the target object as the element the mouse went down on.
-        var mousedownHandler = function(ev) {
-          sourceElem = ev.target;
-        };
-
-        // We check if our original element and the target is the backdrop
-        // because if the original was the backdrop and the target was inside the dialog
-        // we don't want to dialog to close.
-        var mouseupHandler = function(ev) {
-          if (sourceElem === target[0] && ev.target === target[0]) {
-            ev.stopPropagation();
-            ev.preventDefault();
-
-            smartClose();
-          }
-        };
-
-        // Add listeners
-        target.on('mousedown', mousedownHandler);
-        target.on('mouseup', mouseupHandler);
-
-        // Queue remove listeners function
-        removeListeners.push(function() {
-          target.off('mousedown', mousedownHandler);
-          target.off('mouseup', mouseupHandler);
-        });
-      }
-
-      // Attach specific `remove` listener handler
-      options.deactivateListeners = function() {
-        removeListeners.forEach(function(removeFn) {
-          removeFn();
-        });
-        options.deactivateListeners = null;
-      };
-    }
-
-    /**
-     * Show modal backdrop element...
-     */
-    function showBackdrop(scope, element, options) {
-
-      if (options.disableParentScroll) {
-        // !! DO this before creating the backdrop; since disableScrollAround()
-        //    configures the scroll offset; which is used by mdBackDrop postLink()
-        options.restoreScroll = $mdUtil.disableScrollAround(element, options.parent);
-      }
-
-      if (options.hasBackdrop) {
-        options.backdrop = $mdUtil.createBackdrop(scope, "md-dialog-backdrop md-opaque");
-        $animate.enter(options.backdrop, options.parent);
-      }
-
-      /**
-       * Hide modal backdrop element...
-       */
-      options.hideBackdrop = function hideBackdrop($destroy) {
-        if (options.backdrop) {
-          if ( !!$destroy ) options.backdrop.remove();
-          else              $animate.leave(options.backdrop);
-        }
-
-        if (options.disableParentScroll) {
-          options.restoreScroll();
-          delete options.restoreScroll;
-        }
-
-        options.hideBackdrop = null;
-      }
-    }
-
-    /**
-     * Inject ARIA-specific attributes appropriate for Dialogs
-     */
-    function configureAria(element, options) {
-
-      var role = (options.$type === 'alert') ? 'alertdialog' : 'dialog';
-      var dialogContent = element.find('md-dialog-content');
-      var dialogId = element.attr('id') || ('dialog_' + $mdUtil.nextUid());
-
-      element.attr({
-        'role': role,
-        'tabIndex': '-1'
-      });
-
-      if (dialogContent.length === 0) {
-        dialogContent = element;
-      }
-
-      dialogContent.attr('id', dialogId);
-      element.attr('aria-describedby', dialogId);
-
-      if (options.ariaLabel) {
-        $mdAria.expect(element, 'aria-label', options.ariaLabel);
-      }
-      else {
-        $mdAria.expectAsync(element, 'aria-label', function() {
-          var words = dialogContent.text().split(/\s+/);
-          if (words.length > 3) words = words.slice(0, 3).concat('...');
-          return words.join(' ');
-        });
-      }
-
-      // Set up elements before and after the dialog content to capture focus and
-      // redirect back into the dialog.
-      topFocusTrap = document.createElement('div');
-      topFocusTrap.classList.add('md-dialog-focus-trap');
-      topFocusTrap.tabIndex = 0;
-
-      bottomFocusTrap = topFocusTrap.cloneNode(false);
-
-      // When focus is about to move out of the dialog, we want to intercept it and redirect it
-      // back to the dialog element.
-      var focusHandler = angular.bind(element, element.focus);
-      topFocusTrap.addEventListener('focus', focusHandler);
-      bottomFocusTrap.addEventListener('focus', focusHandler);
-
-      // The top focus trap inserted immeidately before the md-dialog element (as a sibling).
-      // The bottom focus trap is inserted at the very end of the md-dialog element (as a child).
-      element[0].parentNode.insertBefore(topFocusTrap, element[0]);
-      element.append(bottomFocusTrap);
-    }
-
-    /**
-     * Prevents screen reader interaction behind modal window
-     * on swipe interfaces
-     */
-    function lockScreenReader(element, options) {
-      var isHidden = true;
-
-      // get raw DOM node
-      walkDOM(element[0]);
-
-      options.unlockScreenReader = function() {
-        isHidden = false;
-        walkDOM(element[0]);
-
-        options.unlockScreenReader = null;
-      };
-
-      /**
-       * Walk DOM to apply or remove aria-hidden on sibling nodes
-       * and parent sibling nodes
-       *
-       */
-      function walkDOM(element) {
-        while (element.parentNode) {
-          if (element === document.body) {
-            return;
-          }
-          var children = element.parentNode.children;
-          for (var i = 0; i < children.length; i++) {
-            // skip over child if it is an ascendant of the dialog
-            // or a script or style tag
-            if (element !== children[i] && !isNodeOneOf(children[i], ['SCRIPT', 'STYLE'])) {
-              children[i].setAttribute('aria-hidden', isHidden);
-            }
-          }
-
-          walkDOM(element = element.parentNode);
-        }
-      }
-    }
-
-    /**
-     * Ensure the dialog container fill-stretches to the viewport
-     */
-    function stretchDialogContainerToViewport(container, options) {
-      var isFixed = $window.getComputedStyle($document[0].body).position == 'fixed';
-      var backdrop = options.backdrop ? $window.getComputedStyle(options.backdrop[0]) : null;
-      var height = backdrop ? Math.min($document[0].body.clientHeight, Math.ceil(Math.abs(parseInt(backdrop.height, 10)))) : 0;
-
-      container.css({
-        top: (isFixed ? $mdUtil.scrollTop(options.parent) : 0) + 'px',
-        height: height ? height + 'px' : '100%'
-      });
-
-      return container;
-    }
-
-    /**
-     *  Dialog open and pop-in animation
-     */
-    function dialogPopIn(container, options) {
-      // Add the `md-dialog-container` to the DOM
-      options.parent.append(container);
-      stretchDialogContainerToViewport(container, options);
-
-      var dialogEl = container.find('md-dialog');
-      var animator = $mdUtil.dom.animator;
-      var buildTranslateToOrigin = animator.calculateZoomToOrigin;
-      var translateOptions = {transitionInClass: 'md-transition-in', transitionOutClass: 'md-transition-out'};
-      var from = animator.toTransformCss(buildTranslateToOrigin(dialogEl, options.openFrom || options.origin));
-      var to = animator.toTransformCss("");  // defaults to center display (or parent or $rootElement)
-
-      if (options.fullscreen) {
-        dialogEl.addClass('md-dialog-fullscreen');
-      }
-
-      return animator
-        .translate3d(dialogEl, from, to, translateOptions)
-        .then(function(animateReversal) {
-          // Build a reversal translate function synched to this translation...
-          options.reverseAnimate = function() {
-            delete options.reverseAnimate;
-
-            if (options.closeTo) {
-              // Using the opposite classes to create a close animation to the closeTo element
-              translateOptions = {transitionInClass: 'md-transition-out', transitionOutClass: 'md-transition-in'};
-              from = to;
-              to = animator.toTransformCss(buildTranslateToOrigin(dialogEl, options.closeTo));
-
-              return animator
-                .translate3d(dialogEl, from, to,translateOptions);
-            }
-
-            return animateReversal(
-              animator.toTransformCss(
-                // in case the origin element has moved or is hidden,
-                // let's recalculate the translateCSS
-                buildTranslateToOrigin(dialogEl, options.origin)
-              )
-            );
-
-          };
-          return true;
-        });
-    }
-
-    /**
-     * Dialog close and pop-out animation
-     */
-    function dialogPopOut(container, options) {
-      return options.reverseAnimate();
-    }
-
-    /**
-     * Utility function to filter out raw DOM nodes
-     */
-    function isNodeOneOf(elem, nodeTypeArray) {
-      if (nodeTypeArray.indexOf(elem.nodeName) !== -1) {
-        return true;
-      }
-    }
-
-  }
-}
-MdDialogProvider.$inject = ["$$interimElementProvider"];
-
-})();
-(function(){
-"use strict";
-
-/**
- * @ngdoc module
  * @name material.components.divider
  * @description Divider module!
  */
@@ -11414,6 +11414,313 @@ angular.module('material.components.icon', [
 
 /**
  * @ngdoc module
+ * @name material.components.list
+ * @description
+ * List module
+ */
+angular.module('material.components.list', [
+  'material.core'
+])
+  .controller('MdListController', MdListController)
+  .directive('mdList', mdListDirective)
+  .directive('mdListItem', mdListItemDirective);
+
+/**
+ * @ngdoc directive
+ * @name mdList
+ * @module material.components.list
+ *
+ * @restrict E
+ *
+ * @description
+ * The `<md-list>` directive is a list container for 1..n `<md-list-item>` tags.
+ *
+ * @usage
+ * <hljs lang="html">
+ * <md-list>
+ *   <md-list-item class="md-2-line" ng-repeat="item in todos">
+ *     <md-checkbox ng-model="item.done"></md-checkbox>
+ *     <div class="md-list-item-text">
+ *       <h3>{{item.title}}</h3>
+ *       <p>{{item.description}}</p>
+ *     </div>
+ *   </md-list-item>
+ * </md-list>
+ * </hljs>
+ */
+
+function mdListDirective($mdTheming) {
+  return {
+    restrict: 'E',
+    compile: function(tEl) {
+      tEl[0].setAttribute('role', 'list');
+      return $mdTheming;
+    }
+  };
+}
+mdListDirective.$inject = ["$mdTheming"];
+/**
+ * @ngdoc directive
+ * @name mdListItem
+ * @module material.components.list
+ *
+ * @restrict E
+ *
+ * @description
+ * The `<md-list-item>` directive is a container intended for row items in a `<md-list>` container.
+ * The `md-2-line` and `md-3-line` classes can be added to a `<md-list-item>` 
+ * to increase the height with 22px and 40px respectively.
+ *
+ * ## CSS
+ * `.md-avatar` - class for image avatars
+ *
+ * `.md-avatar-icon` - class for icon avatars
+ *
+ * `.md-offset` - on content without an avatar
+ *
+ * @usage
+ * <hljs lang="html">
+ *  <md-list>
+ *    <md-list-item>
+ *      <img class="md-avatar" ng-src="path/to/img"/>
+ *      <span>Item content in list</span>
+ *    </md-list-item>
+ *    <md-list-item>
+ *      <md-icon class="md-avatar-icon" md-svg-icon="communication:phone"></md-icon>
+ *      <span>Item content in list</span>
+ *    </md-list-item>
+ *  </md-list>
+ * </hljs>
+ *
+ * _**Note:** We automatically apply special styling when the inner contents are wrapped inside
+ * of a `<md-button>` tag. This styling is automatically ignored for `class="md-secondary"` buttons
+ * and you can include a class of `class="md-exclude"` if you need to use a non-secondary button
+ * that is inside the list, but does not wrap the contents._
+ */
+function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
+  var proxiedTypes = ['md-checkbox', 'md-switch'];
+  return {
+    restrict: 'E',
+    controller: 'MdListController',
+    compile: function(tEl, tAttrs) {
+      // Check for proxy controls (no ng-click on parent, and a control inside)
+      var secondaryItem = tEl[0].querySelector('.md-secondary');
+      var hasProxiedElement;
+      var proxyElement;
+
+      tEl[0].setAttribute('role', 'listitem');
+
+      if (tAttrs.ngClick || tAttrs.ngHref || tAttrs.href || tAttrs.uiSref || tAttrs.ngAttrUiSref) {
+        wrapIn('button');
+      } else {
+        for (var i = 0, type; type = proxiedTypes[i]; ++i) {
+          if (proxyElement = tEl[0].querySelector(type)) {
+            hasProxiedElement = true;
+            break;
+          }
+        }
+        if (hasProxiedElement) {
+          wrapIn('div');
+        } else if (!tEl[0].querySelector('md-button:not(.md-secondary):not(.md-exclude)')) {
+          tEl.addClass('md-no-proxy');
+        }
+      }
+      setupToggleAria();
+
+
+      function setupToggleAria() {
+        var toggleTypes = ['md-switch', 'md-checkbox'];
+        var toggle;
+
+        for (var i = 0, toggleType; toggleType = toggleTypes[i]; ++i) {
+          if (toggle = tEl.find(toggleType)[0]) {
+            if (!toggle.hasAttribute('aria-label')) {
+              var p = tEl.find('p')[0];
+              if (!p) return;
+              toggle.setAttribute('aria-label', 'Toggle ' + p.textContent);
+            }
+          }
+        }
+      }
+
+      function wrapIn(type) {
+        var container;
+        if (type == 'div') {
+          container = angular.element('<div class="md-no-style md-list-item-inner">');
+          container.append(tEl.contents());
+          tEl.addClass('md-proxy-focus');
+        } else {
+          container = angular.element('<md-button class="md-no-style"><div class="md-list-item-inner"></div></md-button>');
+          copyAttributes(tEl[0], container[0]);
+          container.children().eq(0).append(tEl.contents());
+        }
+
+        tEl[0].setAttribute('tabindex', '-1');
+        tEl.append(container);
+
+        if (secondaryItem && !isButton(secondaryItem) && secondaryItem.hasAttribute('ng-click')) {
+          $mdAria.expect(secondaryItem, 'aria-label');
+          var buttonWrapper = angular.element('<md-button class="md-secondary-container md-icon-button">');
+          copyAttributes(secondaryItem, buttonWrapper[0]);
+          secondaryItem.setAttribute('tabindex', '-1');
+          secondaryItem.classList.remove('md-secondary');
+          buttonWrapper.append(secondaryItem);
+          secondaryItem = buttonWrapper[0];
+        }
+
+        // Check for a secondary item and move it outside
+        if ( secondaryItem && (
+          secondaryItem.hasAttribute('ng-click') ||
+            ( tAttrs.ngClick &&
+             isProxiedElement(secondaryItem) )
+        )) {
+          tEl.addClass('md-with-secondary');
+          tEl.append(secondaryItem);
+        }
+      }
+
+      function copyAttributes(item, wrapper) {
+        var copiedAttrs = ['ng-click', 'aria-label', 'ng-disabled',
+          'ui-sref', 'href', 'ng-href', 'ng-attr-ui-sref'];
+        angular.forEach(copiedAttrs, function(attr) {
+          if (item.hasAttribute(attr)) {
+            wrapper.setAttribute(attr, item.getAttribute(attr));
+            item.removeAttribute(attr);
+          }
+        });
+      }
+
+      function isProxiedElement(el) {
+        return proxiedTypes.indexOf(el.nodeName.toLowerCase()) != -1;
+      }
+
+      function isButton(el) {
+        var nodeName = el.nodeName.toUpperCase();
+
+        return nodeName == "MD-BUTTON" || nodeName == "BUTTON";
+      }
+
+      return postLink;
+
+      function postLink($scope, $element, $attr, ctrl) {
+
+        var proxies    = [],
+            firstChild = $element[0].firstElementChild,
+            hasClick   = firstChild && hasClickEvent(firstChild);
+
+        computeProxies();
+        computeClickable();
+
+        if ($element.hasClass('md-proxy-focus') && proxies.length) {
+          angular.forEach(proxies, function(proxy) {
+            proxy = angular.element(proxy);
+
+            $scope.mouseActive = false;
+            proxy.on('mousedown', function() {
+              $scope.mouseActive = true;
+              $timeout(function(){
+                $scope.mouseActive = false;
+              }, 100);
+            })
+            .on('focus', function() {
+              if ($scope.mouseActive === false) { $element.addClass('md-focused'); }
+              proxy.on('blur', function proxyOnBlur() {
+                $element.removeClass('md-focused');
+                proxy.off('blur', proxyOnBlur);
+              });
+            });
+          });
+        }
+
+        function hasClickEvent (element) {
+          var attr = element.attributes;
+          for (var i = 0; i < attr.length; i++) {
+            if ($attr.$normalize(attr[i].name) === 'ngClick') return true;
+          }
+          return false;
+        }
+
+        function computeProxies() {
+          var children = $element.children();
+          if (children.length && !children[0].hasAttribute('ng-click')) {
+            angular.forEach(proxiedTypes, function(type) {
+              angular.forEach(firstChild.querySelectorAll(type), function(child) {
+                proxies.push(child);
+              });
+            });
+          }
+        }
+        function computeClickable() {
+          if (proxies.length == 1 || hasClick) {
+            $element.addClass('md-clickable');
+
+            if (!hasClick) {
+              ctrl.attachRipple($scope, angular.element($element[0].querySelector('.md-no-style')));
+            }
+          }
+        }
+
+        if (!hasClick && !proxies.length) {
+          firstChild && firstChild.addEventListener('keypress', function(e) {
+            if (e.target.nodeName != 'INPUT' && e.target.nodeName != 'TEXTAREA') {
+              var keyCode = e.which || e.keyCode;
+              if (keyCode == $mdConstant.KEY_CODE.SPACE) {
+                if (firstChild) {
+                  firstChild.click();
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              }
+            }
+          });
+        }
+
+        $element.off('click');
+        $element.off('keypress');
+
+        if (proxies.length == 1 && firstChild) {
+          $element.children().eq(0).on('click', function(e) {
+            var parentButton = $mdUtil.getClosest(e.target, 'BUTTON');
+            if (!parentButton && firstChild.contains(e.target)) {
+              angular.forEach(proxies, function(proxy) {
+                if (e.target !== proxy && !proxy.contains(e.target)) {
+                  angular.element(proxy).triggerHandler('click');
+                }
+              });
+            }
+          });
+        }
+      }
+    }
+  };
+}
+mdListItemDirective.$inject = ["$mdAria", "$mdConstant", "$mdUtil", "$timeout"];
+
+/*
+ * @private
+ * @ngdoc controller
+ * @name MdListController
+ * @module material.components.list
+ *
+ */
+function MdListController($scope, $element, $mdListInkRipple) {
+  var ctrl = this;
+  ctrl.attachRipple = attachRipple;
+
+  function attachRipple (scope, element) {
+    var options = {};
+    $mdListInkRipple.attach(scope, element, options);
+  }
+}
+MdListController.$inject = ["$scope", "$element", "$mdListInkRipple"];
+
+
+})();
+(function(){
+"use strict";
+
+/**
+ * @ngdoc module
  * @name material.components.input
  */
 
@@ -11922,313 +12229,6 @@ function ngMessagesDirective() {
     });
   }
 }
-
-})();
-(function(){
-"use strict";
-
-/**
- * @ngdoc module
- * @name material.components.list
- * @description
- * List module
- */
-angular.module('material.components.list', [
-  'material.core'
-])
-  .controller('MdListController', MdListController)
-  .directive('mdList', mdListDirective)
-  .directive('mdListItem', mdListItemDirective);
-
-/**
- * @ngdoc directive
- * @name mdList
- * @module material.components.list
- *
- * @restrict E
- *
- * @description
- * The `<md-list>` directive is a list container for 1..n `<md-list-item>` tags.
- *
- * @usage
- * <hljs lang="html">
- * <md-list>
- *   <md-list-item class="md-2-line" ng-repeat="item in todos">
- *     <md-checkbox ng-model="item.done"></md-checkbox>
- *     <div class="md-list-item-text">
- *       <h3>{{item.title}}</h3>
- *       <p>{{item.description}}</p>
- *     </div>
- *   </md-list-item>
- * </md-list>
- * </hljs>
- */
-
-function mdListDirective($mdTheming) {
-  return {
-    restrict: 'E',
-    compile: function(tEl) {
-      tEl[0].setAttribute('role', 'list');
-      return $mdTheming;
-    }
-  };
-}
-mdListDirective.$inject = ["$mdTheming"];
-/**
- * @ngdoc directive
- * @name mdListItem
- * @module material.components.list
- *
- * @restrict E
- *
- * @description
- * The `<md-list-item>` directive is a container intended for row items in a `<md-list>` container.
- * The `md-2-line` and `md-3-line` classes can be added to a `<md-list-item>` 
- * to increase the height with 22px and 40px respectively.
- *
- * ## CSS
- * `.md-avatar` - class for image avatars
- *
- * `.md-avatar-icon` - class for icon avatars
- *
- * `.md-offset` - on content without an avatar
- *
- * @usage
- * <hljs lang="html">
- *  <md-list>
- *    <md-list-item>
- *      <img class="md-avatar" ng-src="path/to/img"/>
- *      <span>Item content in list</span>
- *    </md-list-item>
- *    <md-list-item>
- *      <md-icon class="md-avatar-icon" md-svg-icon="communication:phone"></md-icon>
- *      <span>Item content in list</span>
- *    </md-list-item>
- *  </md-list>
- * </hljs>
- *
- * _**Note:** We automatically apply special styling when the inner contents are wrapped inside
- * of a `<md-button>` tag. This styling is automatically ignored for `class="md-secondary"` buttons
- * and you can include a class of `class="md-exclude"` if you need to use a non-secondary button
- * that is inside the list, but does not wrap the contents._
- */
-function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
-  var proxiedTypes = ['md-checkbox', 'md-switch'];
-  return {
-    restrict: 'E',
-    controller: 'MdListController',
-    compile: function(tEl, tAttrs) {
-      // Check for proxy controls (no ng-click on parent, and a control inside)
-      var secondaryItem = tEl[0].querySelector('.md-secondary');
-      var hasProxiedElement;
-      var proxyElement;
-
-      tEl[0].setAttribute('role', 'listitem');
-
-      if (tAttrs.ngClick || tAttrs.ngHref || tAttrs.href || tAttrs.uiSref || tAttrs.ngAttrUiSref) {
-        wrapIn('button');
-      } else {
-        for (var i = 0, type; type = proxiedTypes[i]; ++i) {
-          if (proxyElement = tEl[0].querySelector(type)) {
-            hasProxiedElement = true;
-            break;
-          }
-        }
-        if (hasProxiedElement) {
-          wrapIn('div');
-        } else if (!tEl[0].querySelector('md-button:not(.md-secondary):not(.md-exclude)')) {
-          tEl.addClass('md-no-proxy');
-        }
-      }
-      setupToggleAria();
-
-
-      function setupToggleAria() {
-        var toggleTypes = ['md-switch', 'md-checkbox'];
-        var toggle;
-
-        for (var i = 0, toggleType; toggleType = toggleTypes[i]; ++i) {
-          if (toggle = tEl.find(toggleType)[0]) {
-            if (!toggle.hasAttribute('aria-label')) {
-              var p = tEl.find('p')[0];
-              if (!p) return;
-              toggle.setAttribute('aria-label', 'Toggle ' + p.textContent);
-            }
-          }
-        }
-      }
-
-      function wrapIn(type) {
-        var container;
-        if (type == 'div') {
-          container = angular.element('<div class="md-no-style md-list-item-inner">');
-          container.append(tEl.contents());
-          tEl.addClass('md-proxy-focus');
-        } else {
-          container = angular.element('<md-button class="md-no-style"><div class="md-list-item-inner"></div></md-button>');
-          copyAttributes(tEl[0], container[0]);
-          container.children().eq(0).append(tEl.contents());
-        }
-
-        tEl[0].setAttribute('tabindex', '-1');
-        tEl.append(container);
-
-        if (secondaryItem && !isButton(secondaryItem) && secondaryItem.hasAttribute('ng-click')) {
-          $mdAria.expect(secondaryItem, 'aria-label');
-          var buttonWrapper = angular.element('<md-button class="md-secondary-container md-icon-button">');
-          copyAttributes(secondaryItem, buttonWrapper[0]);
-          secondaryItem.setAttribute('tabindex', '-1');
-          secondaryItem.classList.remove('md-secondary');
-          buttonWrapper.append(secondaryItem);
-          secondaryItem = buttonWrapper[0];
-        }
-
-        // Check for a secondary item and move it outside
-        if ( secondaryItem && (
-          secondaryItem.hasAttribute('ng-click') ||
-            ( tAttrs.ngClick &&
-             isProxiedElement(secondaryItem) )
-        )) {
-          tEl.addClass('md-with-secondary');
-          tEl.append(secondaryItem);
-        }
-      }
-
-      function copyAttributes(item, wrapper) {
-        var copiedAttrs = ['ng-click', 'aria-label', 'ng-disabled',
-          'ui-sref', 'href', 'ng-href', 'ng-attr-ui-sref'];
-        angular.forEach(copiedAttrs, function(attr) {
-          if (item.hasAttribute(attr)) {
-            wrapper.setAttribute(attr, item.getAttribute(attr));
-            item.removeAttribute(attr);
-          }
-        });
-      }
-
-      function isProxiedElement(el) {
-        return proxiedTypes.indexOf(el.nodeName.toLowerCase()) != -1;
-      }
-
-      function isButton(el) {
-        var nodeName = el.nodeName.toUpperCase();
-
-        return nodeName == "MD-BUTTON" || nodeName == "BUTTON";
-      }
-
-      return postLink;
-
-      function postLink($scope, $element, $attr, ctrl) {
-
-        var proxies    = [],
-            firstChild = $element[0].firstElementChild,
-            hasClick   = firstChild && hasClickEvent(firstChild);
-
-        computeProxies();
-        computeClickable();
-
-        if ($element.hasClass('md-proxy-focus') && proxies.length) {
-          angular.forEach(proxies, function(proxy) {
-            proxy = angular.element(proxy);
-
-            $scope.mouseActive = false;
-            proxy.on('mousedown', function() {
-              $scope.mouseActive = true;
-              $timeout(function(){
-                $scope.mouseActive = false;
-              }, 100);
-            })
-            .on('focus', function() {
-              if ($scope.mouseActive === false) { $element.addClass('md-focused'); }
-              proxy.on('blur', function proxyOnBlur() {
-                $element.removeClass('md-focused');
-                proxy.off('blur', proxyOnBlur);
-              });
-            });
-          });
-        }
-
-        function hasClickEvent (element) {
-          var attr = element.attributes;
-          for (var i = 0; i < attr.length; i++) {
-            if ($attr.$normalize(attr[i].name) === 'ngClick') return true;
-          }
-          return false;
-        }
-
-        function computeProxies() {
-          var children = $element.children();
-          if (children.length && !children[0].hasAttribute('ng-click')) {
-            angular.forEach(proxiedTypes, function(type) {
-              angular.forEach(firstChild.querySelectorAll(type), function(child) {
-                proxies.push(child);
-              });
-            });
-          }
-        }
-        function computeClickable() {
-          if (proxies.length == 1 || hasClick) {
-            $element.addClass('md-clickable');
-
-            if (!hasClick) {
-              ctrl.attachRipple($scope, angular.element($element[0].querySelector('.md-no-style')));
-            }
-          }
-        }
-
-        if (!hasClick && !proxies.length) {
-          firstChild && firstChild.addEventListener('keypress', function(e) {
-            if (e.target.nodeName != 'INPUT' && e.target.nodeName != 'TEXTAREA') {
-              var keyCode = e.which || e.keyCode;
-              if (keyCode == $mdConstant.KEY_CODE.SPACE) {
-                if (firstChild) {
-                  firstChild.click();
-                  e.preventDefault();
-                  e.stopPropagation();
-                }
-              }
-            }
-          });
-        }
-
-        $element.off('click');
-        $element.off('keypress');
-
-        if (proxies.length == 1 && firstChild) {
-          $element.children().eq(0).on('click', function(e) {
-            var parentButton = $mdUtil.getClosest(e.target, 'BUTTON');
-            if (!parentButton && firstChild.contains(e.target)) {
-              angular.forEach(proxies, function(proxy) {
-                if (e.target !== proxy && !proxy.contains(e.target)) {
-                  angular.element(proxy).triggerHandler('click');
-                }
-              });
-            }
-          });
-        }
-      }
-    }
-  };
-}
-mdListItemDirective.$inject = ["$mdAria", "$mdConstant", "$mdUtil", "$timeout"];
-
-/*
- * @private
- * @ngdoc controller
- * @name MdListController
- * @module material.components.list
- *
- */
-function MdListController($scope, $element, $mdListInkRipple) {
-  var ctrl = this;
-  ctrl.attachRipple = attachRipple;
-
-  function attachRipple (scope, element) {
-    var options = {};
-    $mdListInkRipple.attach(scope, element, options);
-  }
-}
-MdListController.$inject = ["$scope", "$element", "$mdListInkRipple"];
-
 
 })();
 (function(){
@@ -23718,7 +23718,7 @@ MdTabsTemplate.$inject = ["$compile", "$mdUtil"];
 
 })();
 (function(){ 
-angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete.md-THEME_NAME-theme {  background: '{{background-50}}'; }  md-autocomplete.md-THEME_NAME-theme[disabled] {    background: '{{background-100}}'; }  md-autocomplete.md-THEME_NAME-theme button md-icon path {    fill: '{{background-600}}'; }  md-autocomplete.md-THEME_NAME-theme button:after {    background: '{{background-600-0.3}}'; }.md-autocomplete-suggestions-container.md-THEME_NAME-theme {  background: '{{background-50}}'; }  .md-autocomplete-suggestions-container.md-THEME_NAME-theme li {    color: '{{background-900}}'; }    .md-autocomplete-suggestions-container.md-THEME_NAME-theme li .highlight {      color: '{{background-600}}'; }    .md-autocomplete-suggestions-container.md-THEME_NAME-theme li:hover, .md-autocomplete-suggestions-container.md-THEME_NAME-theme li.selected {      background: '{{background-200}}'; }md-backdrop {  background-color: '{{background-900-0.0}}'; }  md-backdrop.md-opaque.md-THEME_NAME-theme {    background-color: '{{background-900-1.0}}'; }md-bottom-sheet.md-THEME_NAME-theme {  background-color: '{{background-50}}';  border-top-color: '{{background-300}}'; }  md-bottom-sheet.md-THEME_NAME-theme.md-list md-list-item {    color: '{{foreground-1}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    background-color: '{{background-50}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    color: '{{foreground-1}}'; }a.md-button.md-THEME_NAME-theme:not([disabled]):hover,.md-button.md-THEME_NAME-theme:not([disabled]):hover {  background-color: '{{background-500-0.2}}'; }a.md-button.md-THEME_NAME-theme:not([disabled]).md-focused,.md-button.md-THEME_NAME-theme:not([disabled]).md-focused {  background-color: '{{background-500-0.2}}'; }a.md-button.md-THEME_NAME-theme:not([disabled]).md-icon-button:hover,.md-button.md-THEME_NAME-theme:not([disabled]).md-icon-button:hover {  background-color: transparent; }a.md-button.md-THEME_NAME-theme.md-fab,.md-button.md-THEME_NAME-theme.md-fab {  background-color: '{{accent-color}}';  color: '{{accent-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-fab md-icon,  .md-button.md-THEME_NAME-theme.md-fab md-icon {    color: '{{accent-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover {    background-color: '{{accent-color}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused {    background-color: '{{accent-A700}}'; }a.md-button.md-THEME_NAME-theme.md-primary,.md-button.md-THEME_NAME-theme.md-primary {  color: '{{primary-color}}'; }  a.md-button.md-THEME_NAME-theme.md-primary.md-raised, a.md-button.md-THEME_NAME-theme.md-primary.md-fab,  .md-button.md-THEME_NAME-theme.md-primary.md-raised,  .md-button.md-THEME_NAME-theme.md-primary.md-fab {    color: '{{primary-contrast}}';    background-color: '{{primary-color}}'; }    a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]) md-icon, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]) md-icon {      color: '{{primary-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover {      background-color: '{{primary-color}}'; }    a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused {      background-color: '{{primary-600}}'; }  a.md-button.md-THEME_NAME-theme.md-primary:not([disabled]) md-icon,  .md-button.md-THEME_NAME-theme.md-primary:not([disabled]) md-icon {    color: '{{primary-color}}'; }a.md-button.md-THEME_NAME-theme.md-fab,.md-button.md-THEME_NAME-theme.md-fab {  background-color: '{{accent-color}}';  color: '{{accent-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]) .md-icon,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]) .md-icon {    color: '{{accent-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover {    background-color: '{{accent-color}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused {    background-color: '{{accent-A700}}'; }a.md-button.md-THEME_NAME-theme.md-raised,.md-button.md-THEME_NAME-theme.md-raised {  color: '{{background-contrast}}';  background-color: '{{background-50}}'; }  a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]) .md-icon,  .md-button.md-THEME_NAME-theme.md-raised:not([disabled]) .md-icon {    color: '{{background-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover,  .md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover {    background-color: '{{background-50}}'; }  a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused,  .md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused {    background-color: '{{background-200}}'; }a.md-button.md-THEME_NAME-theme.md-warn,.md-button.md-THEME_NAME-theme.md-warn {  color: '{{warn-color}}'; }  a.md-button.md-THEME_NAME-theme.md-warn.md-raised, a.md-button.md-THEME_NAME-theme.md-warn.md-fab,  .md-button.md-THEME_NAME-theme.md-warn.md-raised,  .md-button.md-THEME_NAME-theme.md-warn.md-fab {    color: '{{warn-contrast}}';    background-color: '{{warn-color}}'; }    a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]) md-icon, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]) md-icon {      color: '{{warn-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover {      background-color: '{{warn-color}}'; }    a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused {      background-color: '{{warn-700}}'; }  a.md-button.md-THEME_NAME-theme.md-warn:not([disabled]) md-icon,  .md-button.md-THEME_NAME-theme.md-warn:not([disabled]) md-icon {    color: '{{warn-color}}'; }a.md-button.md-THEME_NAME-theme.md-accent,.md-button.md-THEME_NAME-theme.md-accent {  color: '{{accent-color}}'; }  a.md-button.md-THEME_NAME-theme.md-accent.md-raised, a.md-button.md-THEME_NAME-theme.md-accent.md-fab,  .md-button.md-THEME_NAME-theme.md-accent.md-raised,  .md-button.md-THEME_NAME-theme.md-accent.md-fab {    color: '{{accent-contrast}}';    background-color: '{{accent-color}}'; }    a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]) md-icon, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]) md-icon {      color: '{{accent-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover {      background-color: '{{accent-color}}'; }    a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused {      background-color: '{{accent-700}}'; }  a.md-button.md-THEME_NAME-theme.md-accent:not([disabled]) md-icon,  .md-button.md-THEME_NAME-theme.md-accent:not([disabled]) md-icon {    color: '{{accent-color}}'; }a.md-button.md-THEME_NAME-theme[disabled], a.md-button.md-THEME_NAME-theme.md-raised[disabled], a.md-button.md-THEME_NAME-theme.md-fab[disabled], a.md-button.md-THEME_NAME-theme.md-accent[disabled], a.md-button.md-THEME_NAME-theme.md-warn[disabled],.md-button.md-THEME_NAME-theme[disabled],.md-button.md-THEME_NAME-theme.md-raised[disabled],.md-button.md-THEME_NAME-theme.md-fab[disabled],.md-button.md-THEME_NAME-theme.md-accent[disabled],.md-button.md-THEME_NAME-theme.md-warn[disabled] {  color: '{{foreground-3}}' !important;  cursor: not-allowed; }  a.md-button.md-THEME_NAME-theme[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-raised[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-fab[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-accent[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-warn[disabled] md-icon,  .md-button.md-THEME_NAME-theme[disabled] md-icon,  .md-button.md-THEME_NAME-theme.md-raised[disabled] md-icon,  .md-button.md-THEME_NAME-theme.md-fab[disabled] md-icon,  .md-button.md-THEME_NAME-theme.md-accent[disabled] md-icon,  .md-button.md-THEME_NAME-theme.md-warn[disabled] md-icon {    color: '{{foreground-3}}'; }a.md-button.md-THEME_NAME-theme.md-raised[disabled], a.md-button.md-THEME_NAME-theme.md-fab[disabled],.md-button.md-THEME_NAME-theme.md-raised[disabled],.md-button.md-THEME_NAME-theme.md-fab[disabled] {  background-color: '{{foreground-4}}'; }a.md-button.md-THEME_NAME-theme[disabled],.md-button.md-THEME_NAME-theme[disabled] {  background-color: transparent; }md-card.md-THEME_NAME-theme {  background-color: '{{background-color}}';  border-radius: 2px; }  md-card.md-THEME_NAME-theme .md-card-image {    border-radius: 2px 2px 0 0; }  md-card.md-THEME_NAME-theme md-card-header md-card-avatar md-icon {    color: '{{background-color}}';    background-color: '{{foreground-3}}'; }  md-card.md-THEME_NAME-theme md-card-header md-card-header-text .md-subhead {    color: '{{foreground-2}}'; }  md-card.md-THEME_NAME-theme md-card-title md-card-title-text:not(:only-child) .md-subhead {    color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme .md-ripple {  color: '{{accent-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked.md-focused .md-container:before {  background-color: '{{accent-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme .md-ink-ripple {  color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon {  background-color: '{{accent-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon:after {  border-color: '{{accent-contrast-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ripple {  color: '{{primary-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ink-ripple {  color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple {  color: '{{primary-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon {  background-color: '{{primary-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked.md-focused .md-container:before {  background-color: '{{primary-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon:after {  border-color: '{{primary-contrast-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ripple {  color: '{{warn-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ink-ripple {  color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple {  color: '{{warn-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon {  background-color: '{{warn-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked.md-focused:not([disabled]) .md-container:before {  background-color: '{{warn-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-icon {  border-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon {  background-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-label {  color: '{{foreground-3}}'; }md-chips.md-THEME_NAME-theme .md-chips {  box-shadow: 0 1px '{{background-300}}'; }  md-chips.md-THEME_NAME-theme .md-chips.md-focused {    box-shadow: 0 2px '{{primary-color}}'; }md-chips.md-THEME_NAME-theme .md-chip {  background: '{{background-300}}';  color: '{{background-800}}'; }  md-chips.md-THEME_NAME-theme .md-chip.md-focused {    background: '{{primary-color}}';    color: '{{primary-contrast}}'; }    md-chips.md-THEME_NAME-theme .md-chip.md-focused md-icon {      color: '{{primary-contrast}}'; }md-chips.md-THEME_NAME-theme md-chip-remove .md-button md-icon path {  fill: '{{background-500}}'; }.md-contact-suggestion span.md-contact-email {  color: '{{background-400}}'; }md-content.md-THEME_NAME-theme {  color: '{{foreground-1}}';  background-color: '{{background-color}}'; }/** Theme styles for mdCalendar. */.md-calendar.md-THEME_NAME-theme {  color: '{{foreground-1}}'; }  .md-calendar.md-THEME_NAME-theme tr:last-child td {    border-bottom-color: '{{background-200}}'; }.md-THEME_NAME-theme .md-calendar-day-header {  background: '{{background-hue-1}}';  color: '{{foreground-1}}'; }.md-THEME_NAME-theme .md-calendar-date.md-calendar-date-today .md-calendar-date-selection-indicator {  border: 1px solid '{{primary-500}}'; }.md-THEME_NAME-theme .md-calendar-date.md-calendar-date-today.md-calendar-date-disabled {  color: '{{primary-500-0.6}}'; }.md-THEME_NAME-theme .md-calendar-date.md-focus .md-calendar-date-selection-indicator {  background: '{{background-hue-1}}'; }.md-THEME_NAME-theme .md-calendar-date-selection-indicator:hover {  background: '{{background-hue-1}}'; }.md-THEME_NAME-theme .md-calendar-date.md-calendar-selected-date .md-calendar-date-selection-indicator,.md-THEME_NAME-theme .md-calendar-date.md-focus.md-calendar-selected-date .md-calendar-date-selection-indicator {  background: '{{primary-500}}';  color: '{{primary-500-contrast}}';  border-color: transparent; }.md-THEME_NAME-theme .md-calendar-date-disabled,.md-THEME_NAME-theme .md-calendar-month-label-disabled {  color: '{{foreground-3}}'; }/** Theme styles for mdDatepicker. */md-datepicker.md-THEME_NAME-theme {  background: '{{background-color}}'; }.md-THEME_NAME-theme .md-datepicker-input {  color: '{{background-contrast}}';  background: '{{background-color}}'; }  .md-THEME_NAME-theme .md-datepicker-input::-webkit-input-placeholder, .md-THEME_NAME-theme .md-datepicker-input::-moz-placeholder, .md-THEME_NAME-theme .md-datepicker-input:-moz-placeholder, .md-THEME_NAME-theme .md-datepicker-input:-ms-input-placeholder {    color: \"{{foreground-3}}\"; }.md-THEME_NAME-theme .md-datepicker-input-container {  border-bottom-color: '{{background-300}}'; }  .md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-focused {    border-bottom-color: '{{primary-500}}'; }  .md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-invalid {    border-bottom-color: '{{warn-500}}'; }.md-THEME_NAME-theme .md-datepicker-calendar-pane {  border-color: '{{background-300}}'; }.md-THEME_NAME-theme .md-datepicker-triangle-button .md-datepicker-expand-triangle {  border-top-color: '{{foreground-3}}'; }.md-THEME_NAME-theme .md-datepicker-triangle-button:hover .md-datepicker-expand-triangle {  border-top-color: '{{foreground-2}}'; }.md-THEME_NAME-theme .md-datepicker-open .md-datepicker-calendar-icon {  fill: '{{primary-500}}'; }.md-THEME_NAME-theme .md-datepicker-calendar,.md-THEME_NAME-theme .md-datepicker-input-mask-opaque {  background: '{{background-color}}'; }md-dialog.md-THEME_NAME-theme {  border-radius: 4px;  background-color: '{{background-color}}'; }  md-dialog.md-THEME_NAME-theme.md-content-overflow .md-actions, md-dialog.md-THEME_NAME-theme.md-content-overflow md-dialog-actions {    border-top-color: '{{foreground-4}}'; }md-divider.md-THEME_NAME-theme {  border-top-color: '{{foreground-4}}'; }.layout-row > md-divider.md-THEME_NAME-theme {  border-right-color: '{{foreground-4}}'; }md-icon.md-THEME_NAME-theme {  color: '{{foreground-2}}'; }  md-icon.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  md-icon.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  md-icon.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-input-container.md-THEME_NAME-theme .md-input {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}';  text-shadow: '{{foreground-shadow}}'; }  md-input-container.md-THEME_NAME-theme .md-input::-webkit-input-placeholder, md-input-container.md-THEME_NAME-theme .md-input::-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-ms-input-placeholder {    color: \"{{foreground-3}}\"; }md-input-container.md-THEME_NAME-theme > md-icon {  color: '{{foreground-1}}'; }md-input-container.md-THEME_NAME-theme label,md-input-container.md-THEME_NAME-theme .md-placeholder {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme ng-messages :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [ng-messages] :not(.md-char-counter),md-input-container.md-THEME_NAME-theme ng-message :not(.md-char-counter), md-input-container.md-THEME_NAME-theme data-ng-message :not(.md-char-counter), md-input-container.md-THEME_NAME-theme x-ng-message :not(.md-char-counter),md-input-container.md-THEME_NAME-theme [ng-message] :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [data-ng-message] :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [x-ng-message] :not(.md-char-counter),md-input-container.md-THEME_NAME-theme [ng-message-exp] :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [data-ng-message-exp] :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [x-ng-message-exp] :not(.md-char-counter) {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-has-value label {  color: '{{foreground-2}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused .md-input {  border-color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused label {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused md-icon {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent .md-input {  border-color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid.md-input-focused label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid data-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid x-ng-message,md-input-container.md-THEME_NAME-theme.md-input-invalid [ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [data-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [x-ng-message],md-input-container.md-THEME_NAME-theme.md-input-invalid [ng-message-exp], md-input-container.md-THEME_NAME-theme.md-input-invalid [data-ng-message-exp], md-input-container.md-THEME_NAME-theme.md-input-invalid [x-ng-message-exp],md-input-container.md-THEME_NAME-theme.md-input-invalid .md-char-counter {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme .md-input[disabled],md-input-container.md-THEME_NAME-theme .md-input [disabled] {  border-bottom-color: transparent;  color: '{{foreground-3}}';  background-image: linear-gradient(to right, \"{{foreground-3}}\" 0%, \"{{foreground-3}}\" 33%, transparent 0%);  background-image: -ms-linear-gradient(left, transparent 0%, \"{{foreground-3}}\" 100%); }md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h3, md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h4,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h3,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h4 {  color: '{{foreground-1}}'; }md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text p,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text p {  color: '{{foreground-2}}'; }md-list.md-THEME_NAME-theme .md-proxy-focus.md-focused div.md-no-style {  background-color: '{{background-100}}'; }md-list.md-THEME_NAME-theme md-list-item > .md-avatar-icon {  background-color: '{{foreground-3}}';  color: '{{background-color}}'; }md-list.md-THEME_NAME-theme md-list-item > md-icon {  color: '{{foreground-2}}'; }  md-list.md-THEME_NAME-theme md-list-item > md-icon.md-highlight {    color: '{{primary-color}}'; }    md-list.md-THEME_NAME-theme md-list-item > md-icon.md-highlight.md-accent {      color: '{{accent-color}}'; }md-menu-content.md-THEME_NAME-theme {  background-color: '{{background-color}}'; }  md-menu-content.md-THEME_NAME-theme md-menu-divider {    background-color: '{{foreground-4}}'; }md-menu-bar.md-THEME_NAME-theme > button.md-button {  color: '{{foreground-2}}';  border-radius: 2px; }md-menu-bar.md-THEME_NAME-theme md-menu.md-open > button, md-menu-bar.md-THEME_NAME-theme md-menu > button:focus {  outline: none;  background: '{{background-200}}'; }md-menu-bar.md-THEME_NAME-theme.md-open:not(.md-keyboard-mode) md-menu:hover > button {  background-color: '{{ background-500-0.2}}'; }md-menu-bar.md-THEME_NAME-theme:not(.md-keyboard-mode):not(.md-open) md-menu button:hover,md-menu-bar.md-THEME_NAME-theme:not(.md-keyboard-mode):not(.md-open) md-menu button:focus {  background: transparent; }md-menu-content.md-THEME_NAME-theme .md-menu > .md-button:after {  color: '{{foreground-2}}'; }md-menu-content.md-THEME_NAME-theme .md-menu.md-open > .md-button {  background-color: '{{ background-500-0.2}}'; }md-toolbar.md-THEME_NAME-theme.md-menu-toolbar {  background-color: '{{background-color}}';  color: '{{foreground-1}}'; }  md-toolbar.md-THEME_NAME-theme.md-menu-toolbar md-toolbar-filler {    background-color: '{{primary-color}}';    color: '{{primary-contrast}}'; }    md-toolbar.md-THEME_NAME-theme.md-menu-toolbar md-toolbar-filler md-icon {      color: '{{primary-contrast}}'; }md-progress-circular.md-THEME_NAME-theme {  background-color: transparent; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-gap {    border-top-color: '{{primary-color}}';    border-bottom-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-top-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-right-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle {    border-left-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-gap {    border-top-color: '{{warn-color}}';    border-bottom-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-top-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-right-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle {    border-left-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-gap {    border-top-color: '{{accent-color}}';    border-bottom-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-top-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-right-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle {    border-left-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme .md-container {  background-color: '{{primary-100}}'; }md-progress-linear.md-THEME_NAME-theme .md-bar {  background-color: '{{primary-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-container {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-bar {  background-color: '{{warn-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-container {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-bar {  background-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-bar1 {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-dashed:before {  background: radial-gradient(\"{{warn-100}}\" 0%, \"{{warn-100}}\" 16%, transparent 42%); }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-bar1 {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-dashed:before {  background: radial-gradient(\"{{accent-100}}\" 0%, \"{{accent-100}}\" 16%, transparent 42%); }md-radio-button.md-THEME_NAME-theme .md-off {  border-color: '{{foreground-2}}'; }md-radio-button.md-THEME_NAME-theme .md-on {  background-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-off {  border-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme .md-container .md-ripple {  color: '{{accent-600}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-on {  background-color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off {  border-color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple {  color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple {  color: '{{primary-600}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-on {  background-color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off {  border-color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple {  color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple {  color: '{{warn-600}}'; }md-radio-group.md-THEME_NAME-theme[disabled],md-radio-button.md-THEME_NAME-theme[disabled] {  color: '{{foreground-3}}'; }  md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-off,  md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-off {    border-color: '{{foreground-3}}'; }  md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-on,  md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-on {    border-color: '{{foreground-3}}'; }md-radio-group.md-THEME_NAME-theme .md-checked .md-ink-ripple {  color: '{{accent-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-THEME_NAME-theme .md-checked:not([disabled]).md-primary .md-ink-ripple {  color: '{{primary-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme .md-checked.md-primary .md-ink-ripple {  color: '{{warn-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked .md-container:before {  background-color: '{{accent-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty).md-primary .md-checked .md-container:before,md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-primary .md-container:before {  background-color: '{{primary-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty).md-warn .md-checked .md-container:before,md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-warn .md-container:before {  background-color: '{{warn-color-0.26}}'; }md-select.md-THEME_NAME-theme[disabled] .md-select-value {  border-bottom-color: transparent;  background-image: linear-gradient(to right, \"{{foreground-3}}\" 0%, \"{{foreground-3}}\" 33%, transparent 0%);  background-image: -ms-linear-gradient(left, transparent 0%, \"{{foreground-3}}\" 100%); }md-select.md-THEME_NAME-theme .md-select-value {  border-bottom-color: '{{foreground-4}}'; }  md-select.md-THEME_NAME-theme .md-select-value.md-select-placeholder {    color: '{{foreground-3}}'; }md-select.md-THEME_NAME-theme.ng-invalid.ng-dirty .md-select-value {  color: '{{warn-500}}' !important;  border-bottom-color: '{{warn-500}}' !important; }md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-value {  border-bottom-color: '{{primary-color}}';  color: '{{ foreground-1 }}'; }  md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-value.md-select-placeholder {    color: '{{ foreground-1 }}'; }md-select.md-THEME_NAME-theme:not([disabled]):focus.md-accent .md-select-value {  border-bottom-color: '{{accent-color}}'; }md-select.md-THEME_NAME-theme:not([disabled]):focus.md-warn .md-select-value {  border-bottom-color: '{{warn-color}}'; }md-select.md-THEME_NAME-theme[disabled] .md-select-value {  color: '{{foreground-3}}'; }  md-select.md-THEME_NAME-theme[disabled] .md-select-value.md-select-placeholder {    color: '{{foreground-3}}'; }md-select-menu.md-THEME_NAME-theme md-option[disabled] {  color: '{{foreground-3}}'; }md-select-menu.md-THEME_NAME-theme md-optgroup {  color: '{{foreground-2}}'; }  md-select-menu.md-THEME_NAME-theme md-optgroup md-option {    color: '{{foreground-1}}'; }md-select-menu.md-THEME_NAME-theme md-option[selected] {  color: '{{primary-500}}'; }  md-select-menu.md-THEME_NAME-theme md-option[selected]:focus {    color: '{{primary-600}}'; }  md-select-menu.md-THEME_NAME-theme md-option[selected].md-accent {    color: '{{accent-500}}'; }    md-select-menu.md-THEME_NAME-theme md-option[selected].md-accent:focus {      color: '{{accent-600}}'; }md-select-menu.md-THEME_NAME-theme md-option:focus:not([disabled]):not([selected]) {  background: '{{background-200}}'; }md-sidenav.md-THEME_NAME-theme {  background-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme .md-track {  background-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme .md-track-ticks {  background-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-focus-thumb {  background-color: '{{foreground-2}}'; }md-slider.md-THEME_NAME-theme .md-focus-ring {  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-disabled-thumb {  border-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme.md-min .md-thumb:after {  background-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme .md-track.md-track-fill {  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb:after {  border-color: '{{accent-color}}';  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-sign {  background-color: '{{accent-color}}'; }  md-slider.md-THEME_NAME-theme .md-sign:after {    border-top-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb-text {  color: '{{accent-contrast}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-focus-ring {  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-track.md-track-fill {  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb:after {  border-color: '{{warn-color}}';  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-sign {  background-color: '{{warn-color}}'; }  md-slider.md-THEME_NAME-theme.md-warn .md-sign:after {    border-top-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb-text {  color: '{{warn-contrast}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-focus-ring {  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-track.md-track-fill {  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb:after {  border-color: '{{primary-color}}';  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-sign {  background-color: '{{primary-color}}'; }  md-slider.md-THEME_NAME-theme.md-primary .md-sign:after {    border-top-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb-text {  color: '{{primary-contrast}}'; }md-slider.md-THEME_NAME-theme[disabled] .md-thumb:after {  border-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme[disabled]:not(.md-min) .md-thumb:after {  background-color: '{{foreground-3}}'; }.md-subheader.md-THEME_NAME-theme {  color: '{{ foreground-2-0.23 }}';  background-color: '{{background-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme .md-ink-ripple {  color: '{{background-500}}'; }md-switch.md-THEME_NAME-theme .md-thumb {  background-color: '{{background-50}}'; }md-switch.md-THEME_NAME-theme .md-bar {  background-color: '{{background-500}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-thumb {  background-color: '{{accent-color}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-bar {  background-color: '{{accent-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-focused .md-thumb:before {  background-color: '{{accent-color-0.26}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-ink-ripple {  color: '{{primary-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-thumb {  background-color: '{{primary-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-bar {  background-color: '{{primary-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary.md-focused .md-thumb:before {  background-color: '{{primary-color-0.26}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-ink-ripple {  color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-thumb {  background-color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-bar {  background-color: '{{warn-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn.md-focused .md-thumb:before {  background-color: '{{warn-color-0.26}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-thumb {  background-color: '{{background-400}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-bar {  background-color: '{{foreground-4}}'; }md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: transparent;  border-color: '{{foreground-4}}'; }md-tabs.md-THEME_NAME-theme .md-paginator md-icon {  color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme md-ink-bar {  color: '{{accent-color}}';  background: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme .md-tab {  color: '{{foreground-2}}'; }  md-tabs.md-THEME_NAME-theme .md-tab[disabled], md-tabs.md-THEME_NAME-theme .md-tab[disabled] md-icon {    color: '{{foreground-3}}'; }  md-tabs.md-THEME_NAME-theme .md-tab.md-active, md-tabs.md-THEME_NAME-theme .md-tab.md-active md-icon, md-tabs.md-THEME_NAME-theme .md-tab.md-focused, md-tabs.md-THEME_NAME-theme .md-tab.md-focused md-icon {    color: '{{primary-color}}'; }  md-tabs.md-THEME_NAME-theme .md-tab.md-focused {    background: '{{primary-color-0.1}}'; }  md-tabs.md-THEME_NAME-theme .md-tab .md-ripple-container {    color: '{{accent-100}}'; }md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper {  background-color: '{{accent-color}}'; }  md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{accent-100}}'; }    md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{accent-contrast}}'; }    md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{accent-contrast-0.1}}'; }  md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-ink-bar {    color: '{{primary-600-1}}';    background: '{{primary-600-1}}'; }md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper {  background-color: '{{primary-color}}'; }  md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{primary-100}}'; }    md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{primary-contrast}}'; }    md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{primary-contrast-0.1}}'; }md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper {  background-color: '{{warn-color}}'; }  md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{warn-100}}'; }    md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{warn-contrast}}'; }    md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{warn-contrast-0.1}}'; }md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper {  background-color: '{{primary-color}}'; }  md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{primary-100}}'; }    md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{primary-contrast}}'; }    md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{primary-contrast-0.1}}'; }md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper {  background-color: '{{accent-color}}'; }  md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{accent-100}}'; }    md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{accent-contrast}}'; }    md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{accent-contrast-0.1}}'; }  md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-ink-bar {    color: '{{primary-600-1}}';    background: '{{primary-600-1}}'; }md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper {  background-color: '{{warn-color}}'; }  md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{warn-100}}'; }    md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{warn-contrast}}'; }    md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{warn-contrast-0.1}}'; }md-toast.md-THEME_NAME-theme {  background-color: #323232;  color: '{{background-50}}'; }  md-toast.md-THEME_NAME-theme .md-button {    color: '{{background-50}}'; }    md-toast.md-THEME_NAME-theme .md-button.md-highlight {      color: '{{primary-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-accent {        color: '{{accent-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-warn {        color: '{{warn-A200}}'; }md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) {  background-color: '{{primary-color}}';  color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-icon {    color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) .md-button:not(.md-raised) {    color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent {    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }  md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn {    background-color: '{{warn-color}}';    color: '{{warn-contrast}}'; }md-tooltip.md-THEME_NAME-theme {  color: '{{background-A100}}'; }  md-tooltip.md-THEME_NAME-theme .md-content {    background-color: '{{foreground-2}}'; }"); 
+angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete.md-THEME_NAME-theme {  background: '{{background-50}}'; }  md-autocomplete.md-THEME_NAME-theme[disabled] {    background: '{{background-100}}'; }  md-autocomplete.md-THEME_NAME-theme button md-icon path {    fill: '{{background-600}}'; }  md-autocomplete.md-THEME_NAME-theme button:after {    background: '{{background-600-0.3}}'; }.md-autocomplete-suggestions-container.md-THEME_NAME-theme {  background: '{{background-50}}'; }  .md-autocomplete-suggestions-container.md-THEME_NAME-theme li {    color: '{{background-900}}'; }    .md-autocomplete-suggestions-container.md-THEME_NAME-theme li .highlight {      color: '{{background-600}}'; }    .md-autocomplete-suggestions-container.md-THEME_NAME-theme li:hover, .md-autocomplete-suggestions-container.md-THEME_NAME-theme li.selected {      background: '{{background-200}}'; }md-backdrop {  background-color: '{{background-900-0.0}}'; }  md-backdrop.md-opaque.md-THEME_NAME-theme {    background-color: '{{background-900-1.0}}'; }md-bottom-sheet.md-THEME_NAME-theme {  background-color: '{{background-50}}';  border-top-color: '{{background-300}}'; }  md-bottom-sheet.md-THEME_NAME-theme.md-list md-list-item {    color: '{{foreground-1}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    background-color: '{{background-50}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    color: '{{foreground-1}}'; }a.md-button.md-THEME_NAME-theme:not([disabled]):hover,.md-button.md-THEME_NAME-theme:not([disabled]):hover {  background-color: '{{background-500-0.2}}'; }a.md-button.md-THEME_NAME-theme:not([disabled]).md-focused,.md-button.md-THEME_NAME-theme:not([disabled]).md-focused {  background-color: '{{background-500-0.2}}'; }a.md-button.md-THEME_NAME-theme:not([disabled]).md-icon-button:hover,.md-button.md-THEME_NAME-theme:not([disabled]).md-icon-button:hover {  background-color: transparent; }a.md-button.md-THEME_NAME-theme.md-fab,.md-button.md-THEME_NAME-theme.md-fab {  background-color: '{{accent-color}}';  color: '{{accent-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-fab md-icon,  .md-button.md-THEME_NAME-theme.md-fab md-icon {    color: '{{accent-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover {    background-color: '{{accent-color}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused {    background-color: '{{accent-A700}}'; }a.md-button.md-THEME_NAME-theme.md-primary,.md-button.md-THEME_NAME-theme.md-primary {  color: '{{primary-color}}'; }  a.md-button.md-THEME_NAME-theme.md-primary.md-raised, a.md-button.md-THEME_NAME-theme.md-primary.md-fab,  .md-button.md-THEME_NAME-theme.md-primary.md-raised,  .md-button.md-THEME_NAME-theme.md-primary.md-fab {    color: '{{primary-contrast}}';    background-color: '{{primary-color}}'; }    a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]) md-icon, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]) md-icon {      color: '{{primary-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover {      background-color: '{{primary-color}}'; }    a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused {      background-color: '{{primary-600}}'; }  a.md-button.md-THEME_NAME-theme.md-primary:not([disabled]) md-icon,  .md-button.md-THEME_NAME-theme.md-primary:not([disabled]) md-icon {    color: '{{primary-color}}'; }a.md-button.md-THEME_NAME-theme.md-fab,.md-button.md-THEME_NAME-theme.md-fab {  background-color: '{{accent-color}}';  color: '{{accent-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]) .md-icon,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]) .md-icon {    color: '{{accent-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover {    background-color: '{{accent-color}}'; }  a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused,  .md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused {    background-color: '{{accent-A700}}'; }a.md-button.md-THEME_NAME-theme.md-raised,.md-button.md-THEME_NAME-theme.md-raised {  color: '{{background-contrast}}';  background-color: '{{background-50}}'; }  a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]) .md-icon,  .md-button.md-THEME_NAME-theme.md-raised:not([disabled]) .md-icon {    color: '{{background-contrast}}'; }  a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover,  .md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover {    background-color: '{{background-50}}'; }  a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused,  .md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused {    background-color: '{{background-200}}'; }a.md-button.md-THEME_NAME-theme.md-warn,.md-button.md-THEME_NAME-theme.md-warn {  color: '{{warn-color}}'; }  a.md-button.md-THEME_NAME-theme.md-warn.md-raised, a.md-button.md-THEME_NAME-theme.md-warn.md-fab,  .md-button.md-THEME_NAME-theme.md-warn.md-raised,  .md-button.md-THEME_NAME-theme.md-warn.md-fab {    color: '{{warn-contrast}}';    background-color: '{{warn-color}}'; }    a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]) md-icon, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]) md-icon {      color: '{{warn-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover {      background-color: '{{warn-color}}'; }    a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused {      background-color: '{{warn-700}}'; }  a.md-button.md-THEME_NAME-theme.md-warn:not([disabled]) md-icon,  .md-button.md-THEME_NAME-theme.md-warn:not([disabled]) md-icon {    color: '{{warn-color}}'; }a.md-button.md-THEME_NAME-theme.md-accent,.md-button.md-THEME_NAME-theme.md-accent {  color: '{{accent-color}}'; }  a.md-button.md-THEME_NAME-theme.md-accent.md-raised, a.md-button.md-THEME_NAME-theme.md-accent.md-fab,  .md-button.md-THEME_NAME-theme.md-accent.md-raised,  .md-button.md-THEME_NAME-theme.md-accent.md-fab {    color: '{{accent-contrast}}';    background-color: '{{accent-color}}'; }    a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]) md-icon, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]) md-icon,    .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]) md-icon {      color: '{{accent-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover,    .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover {      background-color: '{{accent-color}}'; }    a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused,    .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused {      background-color: '{{accent-700}}'; }  a.md-button.md-THEME_NAME-theme.md-accent:not([disabled]) md-icon,  .md-button.md-THEME_NAME-theme.md-accent:not([disabled]) md-icon {    color: '{{accent-color}}'; }a.md-button.md-THEME_NAME-theme[disabled], a.md-button.md-THEME_NAME-theme.md-raised[disabled], a.md-button.md-THEME_NAME-theme.md-fab[disabled], a.md-button.md-THEME_NAME-theme.md-accent[disabled], a.md-button.md-THEME_NAME-theme.md-warn[disabled],.md-button.md-THEME_NAME-theme[disabled],.md-button.md-THEME_NAME-theme.md-raised[disabled],.md-button.md-THEME_NAME-theme.md-fab[disabled],.md-button.md-THEME_NAME-theme.md-accent[disabled],.md-button.md-THEME_NAME-theme.md-warn[disabled] {  color: '{{foreground-3}}' !important;  cursor: not-allowed; }  a.md-button.md-THEME_NAME-theme[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-raised[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-fab[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-accent[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-warn[disabled] md-icon,  .md-button.md-THEME_NAME-theme[disabled] md-icon,  .md-button.md-THEME_NAME-theme.md-raised[disabled] md-icon,  .md-button.md-THEME_NAME-theme.md-fab[disabled] md-icon,  .md-button.md-THEME_NAME-theme.md-accent[disabled] md-icon,  .md-button.md-THEME_NAME-theme.md-warn[disabled] md-icon {    color: '{{foreground-3}}'; }a.md-button.md-THEME_NAME-theme.md-raised[disabled], a.md-button.md-THEME_NAME-theme.md-fab[disabled],.md-button.md-THEME_NAME-theme.md-raised[disabled],.md-button.md-THEME_NAME-theme.md-fab[disabled] {  background-color: '{{foreground-4}}'; }a.md-button.md-THEME_NAME-theme[disabled],.md-button.md-THEME_NAME-theme[disabled] {  background-color: transparent; }md-card.md-THEME_NAME-theme {  background-color: '{{background-color}}';  border-radius: 2px; }  md-card.md-THEME_NAME-theme .md-card-image {    border-radius: 2px 2px 0 0; }  md-card.md-THEME_NAME-theme md-card-header md-card-avatar md-icon {    color: '{{background-color}}';    background-color: '{{foreground-3}}'; }  md-card.md-THEME_NAME-theme md-card-header md-card-header-text .md-subhead {    color: '{{foreground-2}}'; }  md-card.md-THEME_NAME-theme md-card-title md-card-title-text:not(:only-child) .md-subhead {    color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme .md-ripple {  color: '{{accent-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked.md-focused .md-container:before {  background-color: '{{accent-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme .md-ink-ripple {  color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon {  background-color: '{{accent-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon:after {  border-color: '{{accent-contrast-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ripple {  color: '{{primary-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ink-ripple {  color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple {  color: '{{primary-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon {  background-color: '{{primary-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked.md-focused .md-container:before {  background-color: '{{primary-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon:after {  border-color: '{{primary-contrast-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ripple {  color: '{{warn-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ink-ripple {  color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple {  color: '{{warn-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon {  background-color: '{{warn-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked.md-focused:not([disabled]) .md-container:before {  background-color: '{{warn-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-icon {  border-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon {  background-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-label {  color: '{{foreground-3}}'; }md-chips.md-THEME_NAME-theme .md-chips {  box-shadow: 0 1px '{{background-300}}'; }  md-chips.md-THEME_NAME-theme .md-chips.md-focused {    box-shadow: 0 2px '{{primary-color}}'; }md-chips.md-THEME_NAME-theme .md-chip {  background: '{{background-300}}';  color: '{{background-800}}'; }  md-chips.md-THEME_NAME-theme .md-chip.md-focused {    background: '{{primary-color}}';    color: '{{primary-contrast}}'; }    md-chips.md-THEME_NAME-theme .md-chip.md-focused md-icon {      color: '{{primary-contrast}}'; }md-chips.md-THEME_NAME-theme md-chip-remove .md-button md-icon path {  fill: '{{background-500}}'; }.md-contact-suggestion span.md-contact-email {  color: '{{background-400}}'; }md-content.md-THEME_NAME-theme {  color: '{{foreground-1}}';  background-color: '{{background-color}}'; }md-dialog.md-THEME_NAME-theme {  border-radius: 4px;  background-color: '{{background-color}}'; }  md-dialog.md-THEME_NAME-theme.md-content-overflow .md-actions, md-dialog.md-THEME_NAME-theme.md-content-overflow md-dialog-actions {    border-top-color: '{{foreground-4}}'; }/** Theme styles for mdCalendar. */.md-calendar.md-THEME_NAME-theme {  color: '{{foreground-1}}'; }  .md-calendar.md-THEME_NAME-theme tr:last-child td {    border-bottom-color: '{{background-200}}'; }.md-THEME_NAME-theme .md-calendar-day-header {  background: '{{background-hue-1}}';  color: '{{foreground-1}}'; }.md-THEME_NAME-theme .md-calendar-date.md-calendar-date-today .md-calendar-date-selection-indicator {  border: 1px solid '{{primary-500}}'; }.md-THEME_NAME-theme .md-calendar-date.md-calendar-date-today.md-calendar-date-disabled {  color: '{{primary-500-0.6}}'; }.md-THEME_NAME-theme .md-calendar-date.md-focus .md-calendar-date-selection-indicator {  background: '{{background-hue-1}}'; }.md-THEME_NAME-theme .md-calendar-date-selection-indicator:hover {  background: '{{background-hue-1}}'; }.md-THEME_NAME-theme .md-calendar-date.md-calendar-selected-date .md-calendar-date-selection-indicator,.md-THEME_NAME-theme .md-calendar-date.md-focus.md-calendar-selected-date .md-calendar-date-selection-indicator {  background: '{{primary-500}}';  color: '{{primary-500-contrast}}';  border-color: transparent; }.md-THEME_NAME-theme .md-calendar-date-disabled,.md-THEME_NAME-theme .md-calendar-month-label-disabled {  color: '{{foreground-3}}'; }/** Theme styles for mdDatepicker. */md-datepicker.md-THEME_NAME-theme {  background: '{{background-color}}'; }.md-THEME_NAME-theme .md-datepicker-input {  color: '{{background-contrast}}';  background: '{{background-color}}'; }  .md-THEME_NAME-theme .md-datepicker-input::-webkit-input-placeholder, .md-THEME_NAME-theme .md-datepicker-input::-moz-placeholder, .md-THEME_NAME-theme .md-datepicker-input:-moz-placeholder, .md-THEME_NAME-theme .md-datepicker-input:-ms-input-placeholder {    color: \"{{foreground-3}}\"; }.md-THEME_NAME-theme .md-datepicker-input-container {  border-bottom-color: '{{background-300}}'; }  .md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-focused {    border-bottom-color: '{{primary-500}}'; }  .md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-invalid {    border-bottom-color: '{{warn-500}}'; }.md-THEME_NAME-theme .md-datepicker-calendar-pane {  border-color: '{{background-300}}'; }.md-THEME_NAME-theme .md-datepicker-triangle-button .md-datepicker-expand-triangle {  border-top-color: '{{foreground-3}}'; }.md-THEME_NAME-theme .md-datepicker-triangle-button:hover .md-datepicker-expand-triangle {  border-top-color: '{{foreground-2}}'; }.md-THEME_NAME-theme .md-datepicker-open .md-datepicker-calendar-icon {  fill: '{{primary-500}}'; }.md-THEME_NAME-theme .md-datepicker-calendar,.md-THEME_NAME-theme .md-datepicker-input-mask-opaque {  background: '{{background-color}}'; }md-divider.md-THEME_NAME-theme {  border-top-color: '{{foreground-4}}'; }.layout-row > md-divider.md-THEME_NAME-theme {  border-right-color: '{{foreground-4}}'; }md-icon.md-THEME_NAME-theme {  color: '{{foreground-2}}'; }  md-icon.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  md-icon.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  md-icon.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h3, md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h4,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h3,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h4 {  color: '{{foreground-1}}'; }md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text p,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text p {  color: '{{foreground-2}}'; }md-list.md-THEME_NAME-theme .md-proxy-focus.md-focused div.md-no-style {  background-color: '{{background-100}}'; }md-list.md-THEME_NAME-theme md-list-item > .md-avatar-icon {  background-color: '{{foreground-3}}';  color: '{{background-color}}'; }md-list.md-THEME_NAME-theme md-list-item > md-icon {  color: '{{foreground-2}}'; }  md-list.md-THEME_NAME-theme md-list-item > md-icon.md-highlight {    color: '{{primary-color}}'; }    md-list.md-THEME_NAME-theme md-list-item > md-icon.md-highlight.md-accent {      color: '{{accent-color}}'; }md-input-container.md-THEME_NAME-theme .md-input {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}';  text-shadow: '{{foreground-shadow}}'; }  md-input-container.md-THEME_NAME-theme .md-input::-webkit-input-placeholder, md-input-container.md-THEME_NAME-theme .md-input::-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-ms-input-placeholder {    color: \"{{foreground-3}}\"; }md-input-container.md-THEME_NAME-theme > md-icon {  color: '{{foreground-1}}'; }md-input-container.md-THEME_NAME-theme label,md-input-container.md-THEME_NAME-theme .md-placeholder {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme ng-messages :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [ng-messages] :not(.md-char-counter),md-input-container.md-THEME_NAME-theme ng-message :not(.md-char-counter), md-input-container.md-THEME_NAME-theme data-ng-message :not(.md-char-counter), md-input-container.md-THEME_NAME-theme x-ng-message :not(.md-char-counter),md-input-container.md-THEME_NAME-theme [ng-message] :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [data-ng-message] :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [x-ng-message] :not(.md-char-counter),md-input-container.md-THEME_NAME-theme [ng-message-exp] :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [data-ng-message-exp] :not(.md-char-counter), md-input-container.md-THEME_NAME-theme [x-ng-message-exp] :not(.md-char-counter) {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-has-value label {  color: '{{foreground-2}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused .md-input {  border-color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused label {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused md-icon {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent .md-input {  border-color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid.md-input-focused label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid data-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid x-ng-message,md-input-container.md-THEME_NAME-theme.md-input-invalid [ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [data-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [x-ng-message],md-input-container.md-THEME_NAME-theme.md-input-invalid [ng-message-exp], md-input-container.md-THEME_NAME-theme.md-input-invalid [data-ng-message-exp], md-input-container.md-THEME_NAME-theme.md-input-invalid [x-ng-message-exp],md-input-container.md-THEME_NAME-theme.md-input-invalid .md-char-counter {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme .md-input[disabled],md-input-container.md-THEME_NAME-theme .md-input [disabled] {  border-bottom-color: transparent;  color: '{{foreground-3}}';  background-image: linear-gradient(to right, \"{{foreground-3}}\" 0%, \"{{foreground-3}}\" 33%, transparent 0%);  background-image: -ms-linear-gradient(left, transparent 0%, \"{{foreground-3}}\" 100%); }md-menu-content.md-THEME_NAME-theme {  background-color: '{{background-color}}'; }  md-menu-content.md-THEME_NAME-theme md-menu-divider {    background-color: '{{foreground-4}}'; }md-menu-bar.md-THEME_NAME-theme > button.md-button {  color: '{{foreground-2}}';  border-radius: 2px; }md-menu-bar.md-THEME_NAME-theme md-menu.md-open > button, md-menu-bar.md-THEME_NAME-theme md-menu > button:focus {  outline: none;  background: '{{background-200}}'; }md-menu-bar.md-THEME_NAME-theme.md-open:not(.md-keyboard-mode) md-menu:hover > button {  background-color: '{{ background-500-0.2}}'; }md-menu-bar.md-THEME_NAME-theme:not(.md-keyboard-mode):not(.md-open) md-menu button:hover,md-menu-bar.md-THEME_NAME-theme:not(.md-keyboard-mode):not(.md-open) md-menu button:focus {  background: transparent; }md-menu-content.md-THEME_NAME-theme .md-menu > .md-button:after {  color: '{{foreground-2}}'; }md-menu-content.md-THEME_NAME-theme .md-menu.md-open > .md-button {  background-color: '{{ background-500-0.2}}'; }md-toolbar.md-THEME_NAME-theme.md-menu-toolbar {  background-color: '{{background-color}}';  color: '{{foreground-1}}'; }  md-toolbar.md-THEME_NAME-theme.md-menu-toolbar md-toolbar-filler {    background-color: '{{primary-color}}';    color: '{{primary-contrast}}'; }    md-toolbar.md-THEME_NAME-theme.md-menu-toolbar md-toolbar-filler md-icon {      color: '{{primary-contrast}}'; }md-progress-circular.md-THEME_NAME-theme {  background-color: transparent; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-gap {    border-top-color: '{{primary-color}}';    border-bottom-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-top-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-right-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle {    border-left-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-gap {    border-top-color: '{{warn-color}}';    border-bottom-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-top-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-right-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle {    border-left-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-gap {    border-top-color: '{{accent-color}}';    border-bottom-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-top-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-right-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle {    border-left-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme .md-container {  background-color: '{{primary-100}}'; }md-progress-linear.md-THEME_NAME-theme .md-bar {  background-color: '{{primary-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-container {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-bar {  background-color: '{{warn-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-container {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-bar {  background-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-bar1 {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-dashed:before {  background: radial-gradient(\"{{warn-100}}\" 0%, \"{{warn-100}}\" 16%, transparent 42%); }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-bar1 {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-dashed:before {  background: radial-gradient(\"{{accent-100}}\" 0%, \"{{accent-100}}\" 16%, transparent 42%); }md-radio-button.md-THEME_NAME-theme .md-off {  border-color: '{{foreground-2}}'; }md-radio-button.md-THEME_NAME-theme .md-on {  background-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-off {  border-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme .md-container .md-ripple {  color: '{{accent-600}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-on {  background-color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off {  border-color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple {  color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple {  color: '{{primary-600}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-on {  background-color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off {  border-color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple {  color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple {  color: '{{warn-600}}'; }md-radio-group.md-THEME_NAME-theme[disabled],md-radio-button.md-THEME_NAME-theme[disabled] {  color: '{{foreground-3}}'; }  md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-off,  md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-off {    border-color: '{{foreground-3}}'; }  md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-on,  md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-on {    border-color: '{{foreground-3}}'; }md-radio-group.md-THEME_NAME-theme .md-checked .md-ink-ripple {  color: '{{accent-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-primary .md-checked:not([disabled]) .md-ink-ripple, md-radio-group.md-THEME_NAME-theme .md-checked:not([disabled]).md-primary .md-ink-ripple {  color: '{{primary-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme .md-checked.md-primary .md-ink-ripple {  color: '{{warn-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked .md-container:before {  background-color: '{{accent-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty).md-primary .md-checked .md-container:before,md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-primary .md-container:before {  background-color: '{{primary-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty).md-warn .md-checked .md-container:before,md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-warn .md-container:before {  background-color: '{{warn-color-0.26}}'; }md-select.md-THEME_NAME-theme[disabled] .md-select-value {  border-bottom-color: transparent;  background-image: linear-gradient(to right, \"{{foreground-3}}\" 0%, \"{{foreground-3}}\" 33%, transparent 0%);  background-image: -ms-linear-gradient(left, transparent 0%, \"{{foreground-3}}\" 100%); }md-select.md-THEME_NAME-theme .md-select-value {  border-bottom-color: '{{foreground-4}}'; }  md-select.md-THEME_NAME-theme .md-select-value.md-select-placeholder {    color: '{{foreground-3}}'; }md-select.md-THEME_NAME-theme.ng-invalid.ng-dirty .md-select-value {  color: '{{warn-500}}' !important;  border-bottom-color: '{{warn-500}}' !important; }md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-value {  border-bottom-color: '{{primary-color}}';  color: '{{ foreground-1 }}'; }  md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-value.md-select-placeholder {    color: '{{ foreground-1 }}'; }md-select.md-THEME_NAME-theme:not([disabled]):focus.md-accent .md-select-value {  border-bottom-color: '{{accent-color}}'; }md-select.md-THEME_NAME-theme:not([disabled]):focus.md-warn .md-select-value {  border-bottom-color: '{{warn-color}}'; }md-select.md-THEME_NAME-theme[disabled] .md-select-value {  color: '{{foreground-3}}'; }  md-select.md-THEME_NAME-theme[disabled] .md-select-value.md-select-placeholder {    color: '{{foreground-3}}'; }md-select-menu.md-THEME_NAME-theme md-option[disabled] {  color: '{{foreground-3}}'; }md-select-menu.md-THEME_NAME-theme md-optgroup {  color: '{{foreground-2}}'; }  md-select-menu.md-THEME_NAME-theme md-optgroup md-option {    color: '{{foreground-1}}'; }md-select-menu.md-THEME_NAME-theme md-option[selected] {  color: '{{primary-500}}'; }  md-select-menu.md-THEME_NAME-theme md-option[selected]:focus {    color: '{{primary-600}}'; }  md-select-menu.md-THEME_NAME-theme md-option[selected].md-accent {    color: '{{accent-500}}'; }    md-select-menu.md-THEME_NAME-theme md-option[selected].md-accent:focus {      color: '{{accent-600}}'; }md-select-menu.md-THEME_NAME-theme md-option:focus:not([disabled]):not([selected]) {  background: '{{background-200}}'; }md-sidenav.md-THEME_NAME-theme {  background-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme .md-track {  background-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme .md-track-ticks {  background-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-focus-thumb {  background-color: '{{foreground-2}}'; }md-slider.md-THEME_NAME-theme .md-focus-ring {  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-disabled-thumb {  border-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme.md-min .md-thumb:after {  background-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme .md-track.md-track-fill {  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb:after {  border-color: '{{accent-color}}';  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-sign {  background-color: '{{accent-color}}'; }  md-slider.md-THEME_NAME-theme .md-sign:after {    border-top-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb-text {  color: '{{accent-contrast}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-focus-ring {  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-track.md-track-fill {  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb:after {  border-color: '{{warn-color}}';  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-sign {  background-color: '{{warn-color}}'; }  md-slider.md-THEME_NAME-theme.md-warn .md-sign:after {    border-top-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb-text {  color: '{{warn-contrast}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-focus-ring {  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-track.md-track-fill {  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb:after {  border-color: '{{primary-color}}';  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-sign {  background-color: '{{primary-color}}'; }  md-slider.md-THEME_NAME-theme.md-primary .md-sign:after {    border-top-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb-text {  color: '{{primary-contrast}}'; }md-slider.md-THEME_NAME-theme[disabled] .md-thumb:after {  border-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme[disabled]:not(.md-min) .md-thumb:after {  background-color: '{{foreground-3}}'; }.md-subheader.md-THEME_NAME-theme {  color: '{{ foreground-2-0.23 }}';  background-color: '{{background-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme .md-ink-ripple {  color: '{{background-500}}'; }md-switch.md-THEME_NAME-theme .md-thumb {  background-color: '{{background-50}}'; }md-switch.md-THEME_NAME-theme .md-bar {  background-color: '{{background-500}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-thumb {  background-color: '{{accent-color}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-bar {  background-color: '{{accent-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-focused .md-thumb:before {  background-color: '{{accent-color-0.26}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-ink-ripple {  color: '{{primary-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-thumb {  background-color: '{{primary-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-bar {  background-color: '{{primary-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary.md-focused .md-thumb:before {  background-color: '{{primary-color-0.26}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-ink-ripple {  color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-thumb {  background-color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-bar {  background-color: '{{warn-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn.md-focused .md-thumb:before {  background-color: '{{warn-color-0.26}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-thumb {  background-color: '{{background-400}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-bar {  background-color: '{{foreground-4}}'; }md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: transparent;  border-color: '{{foreground-4}}'; }md-tabs.md-THEME_NAME-theme .md-paginator md-icon {  color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme md-ink-bar {  color: '{{accent-color}}';  background: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme .md-tab {  color: '{{foreground-2}}'; }  md-tabs.md-THEME_NAME-theme .md-tab[disabled], md-tabs.md-THEME_NAME-theme .md-tab[disabled] md-icon {    color: '{{foreground-3}}'; }  md-tabs.md-THEME_NAME-theme .md-tab.md-active, md-tabs.md-THEME_NAME-theme .md-tab.md-active md-icon, md-tabs.md-THEME_NAME-theme .md-tab.md-focused, md-tabs.md-THEME_NAME-theme .md-tab.md-focused md-icon {    color: '{{primary-color}}'; }  md-tabs.md-THEME_NAME-theme .md-tab.md-focused {    background: '{{primary-color-0.1}}'; }  md-tabs.md-THEME_NAME-theme .md-tab .md-ripple-container {    color: '{{accent-100}}'; }md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper {  background-color: '{{accent-color}}'; }  md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{accent-100}}'; }    md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{accent-contrast}}'; }    md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{accent-contrast-0.1}}'; }  md-tabs.md-THEME_NAME-theme.md-accent > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-ink-bar {    color: '{{primary-600-1}}';    background: '{{primary-600-1}}'; }md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper {  background-color: '{{primary-color}}'; }  md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{primary-100}}'; }    md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{primary-contrast}}'; }    md-tabs.md-THEME_NAME-theme.md-primary > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{primary-contrast-0.1}}'; }md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper {  background-color: '{{warn-color}}'; }  md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{warn-100}}'; }    md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{warn-contrast}}'; }    md-tabs.md-THEME_NAME-theme.md-warn > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{warn-contrast-0.1}}'; }md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper {  background-color: '{{primary-color}}'; }  md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{primary-100}}'; }    md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{primary-contrast}}'; }    md-toolbar > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{primary-contrast-0.1}}'; }md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper {  background-color: '{{accent-color}}'; }  md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{accent-100}}'; }    md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{accent-contrast}}'; }    md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{accent-contrast-0.1}}'; }  md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-ink-bar {    color: '{{primary-600-1}}';    background: '{{primary-600-1}}'; }md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper {  background-color: '{{warn-color}}'; }  md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {    color: '{{warn-100}}'; }    md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active, md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active md-icon, md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused, md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused md-icon {      color: '{{warn-contrast}}'; }    md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-focused {      background: '{{warn-contrast-0.1}}'; }md-toast.md-THEME_NAME-theme {  background-color: #323232;  color: '{{background-50}}'; }  md-toast.md-THEME_NAME-theme .md-button {    color: '{{background-50}}'; }    md-toast.md-THEME_NAME-theme .md-button.md-highlight {      color: '{{primary-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-accent {        color: '{{accent-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-warn {        color: '{{warn-A200}}'; }md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) {  background-color: '{{primary-color}}';  color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-icon {    color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) .md-button:not(.md-raised) {    color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent {    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }  md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn {    background-color: '{{warn-color}}';    color: '{{warn-contrast}}'; }md-tooltip.md-THEME_NAME-theme {  color: '{{background-A100}}'; }  md-tooltip.md-THEME_NAME-theme .md-content {    background-color: '{{foreground-2}}'; }"); 
 })();
 
 
